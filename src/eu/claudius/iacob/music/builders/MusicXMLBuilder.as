@@ -762,7 +762,8 @@ package eu.claudius.iacob.music.builders {
             score.appendChild(buildExtraMusicalContent(data.extraMusical));
 
             // Attach presentation defaults
-            score.appendChild(buildPresentationDefaults(data.presentation));
+            score.appendChild(buildPresentationDefaults(data.width, data.height,
+                        data.margins, data.scaling));
 
             // Attach musical context (part-list)
             score.appendChild(buildMusicalContext(data.musicalContext));
