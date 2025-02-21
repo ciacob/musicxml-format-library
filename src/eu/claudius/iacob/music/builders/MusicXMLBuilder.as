@@ -1,4 +1,11 @@
 package eu.claudius.iacob.music.builders {
+    import ro.ciacob.utils.Strings;
+    import eu.claudius.iacob.music.wrappers.Misc;
+    import eu.claudius.iacob.music.wrappers.Creator;
+    import eu.claudius.iacob.music.wrappers.Identification;
+    import eu.claudius.iacob.music.wrappers.PageMargins;
+    import eu.claudius.iacob.music.wrappers.Scaling;
+
     /**
      * A utility class for building the Extra-Musical Context section of a MusicXML file using E4X.
      */
@@ -18,54 +25,57 @@ package eu.claudius.iacob.music.builders {
 
         /**
          * Builds the <work-title> element.
-         * @param data An object containing:
-         *   - title: String (The title of the score)
-         * @return XML representing the <work-title> element.
+         * @param title: String (The title of the score)
+         * @return XML representing the <work-title> element or null for an empty title.
          */
-        protected static function buildWorkTitle(data:Object):XML {
-            return <work-title>{data.title}</work-title>;
+        protected static function buildWorkTitle(title:String):XML {
+            const $title:String = Strings.trim(title || '');
+            return $title ? <work-title>{$title}</work-title>             : null;
         }
 
         /**
          * Builds the <creator> element.
-         * @param data An object containing:
-         *   - type: String (The type of creator, e.g., "composer")
-         *   - name: String (The name of the creator)
-         * @return XML representing the <creator> element.
+         * @param type: String (The type of creator, e.g., "composer")
+         * @param name: String (The name of the creator)
+         * @return XML representing the <creator> element or null for empty type or name.
          */
-        protected static function buildCreator(data:Object):XML {
-            return <creator type={data.type}>{data.name}</creator>;
+        protected static function buildCreator(type:String, name:String):XML {
+            const $type:String = Strings.trim(type || '');
+            const $name:String = Strings.trim(name || '');
+            return ($type && $name) ? <creator type={$type}>{$name}</creator>             : null;
         }
 
         /**
          * Builds the <encoder> element.
-         * @param data An object containing:
-         *   - encoder: String (The name/version of the software that encoded the file)
-         * @return XML representing the <encoder> element.
+         * @param encoder: String (The name/version of the software that encoded the file)
+         * @return XML representing the <encoder> element, or null for an empty encoder.
          */
-        protected static function buildEncoder(data:Object):XML {
-            return <encoder>{data.encoder}</encoder>;
+        protected static function buildEncoder(encoder:String):XML {
+            const $encoder:String = Strings.trim(encoder || '');
+            return $encoder ? <encoder>{$encoder}</encoder>             : null;
         }
 
         /**
          * Builds the <encoding-date> element.
-         * @param data An object containing:
-         *   - encoding_date: String (The date when the file was encoded, e.g., "YYYY-MM-DD")
-         * @return XML representing the <encoding-date> element.
+         * @param encodingDate: String (The date when the file was encoded, e.g., "YYYY-MM-DD")
+         * @return XML representing the <encoding-date> element, or null for an empty date.
          */
-        protected static function buildEncodingDate(data:Object):XML {
-            return <encoding-date>{data.encoding_date}</encoding-date>;
+        protected static function buildEncodingDate(encodingDate:String):XML {
+            const $date:String = Strings.trim(encodingDate || '');
+            return $date ? <encoding-date>{$date}</encoding-date>             : null;
         }
 
         /**
          * Builds a <miscellaneous-field> element.
-         * @param data An object containing:
-         *   - name: String (The name of the miscellaneous field, e.g., "history", "notes")
-         *   - value: String (The textual content of the field)
-         * @return XML representing a <miscellaneous-field> element.
+         * @param miscName: String (The name of the miscellaneous field, e.g., "history", "notes")
+         * @param miscVal: String (The textual content of the field)
+         * @return XML representing a <miscellaneous-field> element, or null for empty name or value.
          */
-        protected static function buildMiscellaneousField(data:Object):XML {
-            return <miscellaneous-field name={data.name}>{data.value}</miscellaneous-field>;
+        protected static function buildMiscellaneousField(miscName:String, miscVal:String):XML {
+            const $name:String = Strings.trim(miscName || '');
+            const $value:String = Strings.trim(miscVal || '');
+            return ($name && $value) ?
+                <miscellaneous-field name={$name}>{$value}</miscellaneous-field>             : null;
         }
 
         // --------------------------------
@@ -74,44 +84,42 @@ package eu.claudius.iacob.music.builders {
 
         /**
          * Builds the <work> element containing <work-title>.
-         * @param data An object containing:
-         *   - work: Object
-         *       - title: String (The title of the score)
-         * @return XML representing the <work> element.
+         * @param workTitle String (The title of the score)
+         * @return XML representing the <work> element. Can be empty if the title is empty.
          */
-        protected static function buildWork(data:Object):XML {
+        protected static function buildWork(workTitle:String):XML {
             var work:XML = <work/>;
-            work.appendChild(buildWorkTitle({title: data.work.title}));
+            work.appendChild(buildWorkTitle(workTitle));
             return work;
         }
 
         /**
          * Builds the <encoding> element containing <encoder> and <encoding-date>.
-         * @param data An object containing:
-         *   - encoder: String (The name/version of the encoding software)
-         *   - encoding_date: String (The encoding date)
-         * @return XML representing the <encoding> element.
+         * @param encoder: String (The name/version of the encoding software).
+         * @param encodingDate: String (The encoding date).
+         * @return  XML representing the <encoding> element. Can be empty if both
+         *          encoder and date are empty.
          */
-        protected static function buildEncoding(data:Object):XML {
+        protected static function buildEncoding(encoder:String, encodingDate:String):XML {
             var encoding:XML = <encoding/>;
-            encoding.appendChild(buildEncoder({encoder: data.encoder}));
-            encoding.appendChild(buildEncodingDate({encoding_date: data.encoding_date}));
+            encoding.appendChild(buildEncoder(encoder));
+            encoding.appendChild(buildEncodingDate(encodingDate));
             return encoding;
         }
 
         /**
          * Builds the <miscellaneous> element containing multiple <miscellaneous-field> elements.
-         * @param data An object containing:
-         *   - miscellaneous_fields: Array of Objects
-         *       - name: String (The name of the field, e.g., "history", "notes")
-         *       - value: String (The textual content of the field)
-         * @return XML representing the <miscellaneous> element.
+         * @param miscElements: Vector of `Misc` objects, each containing:
+         *       - fieldName: String (The name of the field, e.g., "history", "notes")
+         *       - fieldValue: String (The textual content of the field)
+         * @return XML representing the <miscellaneous> element. Can be empty if no fields are provided.
          */
-        protected static function buildMiscellaneous(data:Object):XML {
+        protected static function buildMiscellaneous(miscElements:Vector.<Misc>):XML {
             var miscellaneous:XML = <miscellaneous/>;
 
-            for each (var field:Object in data.miscellaneous_fields) {
-                miscellaneous.appendChild(buildMiscellaneousField(field));
+            for each (var element:Misc in miscElements) {
+                miscellaneous.appendChild(
+                        buildMiscellaneousField(element.fieldName, element.fieldValue));
             }
 
             return miscellaneous;
@@ -120,27 +128,35 @@ package eu.claudius.iacob.music.builders {
         /**
          * Builds the <identification> element containing <creator>, <encoding>, and <miscellaneous>.
          * @param data An object containing:
-         *   - creator: Object
-         *       - name: String (The name of the composer)
+         *   - creators: Vector of `Creator` objects, each containing:
+         *      - creatorType: String (The type of creator, e.g., "composer")
+         *      - creatorName: String (The name of the creator)
+         
          *   - encoder: String (The encoding software name/version)
-         *   - encoding_date: String (The encoding date)
-         *   - miscellaneous_fields: Array of Objects
-         *       - name: String (Field name, e.g., "history", "notes")
-         *       - value: String (Field content)
+         *   - encodingDate: String (The encoding date)
+         *
+         *   - miscFields: Vector of `Misc` objects, each containing:
+         *      - fieldName: String (The name of the field, e.g., "history", "notes")
+         *      - fieldValue: String (The textual content of the field)
          * @return XML representing the <identification> element.
          */
-        protected static function buildIdentification(data:Object):XML {
+        protected static function buildIdentification(data:Identification):XML {
             var identification:XML = <identification/>;
 
-            // Add composer (creator)
-            identification.appendChild(buildCreator({type: "composer", name: data.creator.name}));
+            // Add creators (composer, lyricist, etc.)
+            if (data.creators && data.creators.length > 0) {
+                for each (var creator:Creator in data.creators) {
+                    identification.appendChild(
+                            buildCreator(creator.creatorType, creator.creatorName));
+                }
+            }
 
             // Add encoding information
-            identification.appendChild(buildEncoding({encoder: data.encoder, encoding_date: data.encoding_date}));
+            identification.appendChild(buildEncoding(data.encoder, data.encodingDate));
 
             // Add miscellaneous metadata (history, notes, etc.)
-            if (data.miscellaneous_fields.length > 0) {
-                identification.appendChild(buildMiscellaneous({miscellaneous_fields: data.miscellaneous_fields}));
+            if (data.miscFields && data.miscFields.length > 0) {
+                identification.appendChild(buildMiscellaneous(data.miscFields));
             }
 
             return identification;
@@ -152,31 +168,29 @@ package eu.claudius.iacob.music.builders {
 
         /**
          * Builds the entire "Extra-Musical Context" section as XML.
-         * @param data An object containing:
-         *   - work: Object
-         *       - title: String (The title of the score)
-         *   - creator: Object
-         *       - name: String (The name of the composer)
-         *   - encoder: String (The encoding software name/version)
-         *   - encoding_date: String (The encoding date)
-         *   - miscellaneous_fields: Array of Objects
-         *       - name: String (Field name, e.g., "history", "notes")
-         *       - value: String (Field content)
+         * @param title: String (The title of the score)
+         * @param identification: Identification object containing:
+         * - creators: Vector of `Creator` objects, each containing:
+         *   - creatorType: String (The type of creator, e.g., "composer")
+         *   - creatorName: String (The name of the creator)
+         *
+         * - encoder: String (The encoding software name/version)
+         * - encodingDate: String (The encoding date)
+         *
+         * - miscFields: Vector of `Misc` objects, each containing:
+         *   - fieldName: String (The name of the field, e.g., "history", "notes")
+         *   - fieldValue: String (The textual content of the field)
+         
          * @return XML representing the <extra-musical-context> section.
          */
         public static function buildExtraMusicalContent(data:Object):XML {
             var extraMusical:XML = <extra-musical-context/>;
 
             // Add work information
-            extraMusical.appendChild(buildWork({work: {title: data.work.title}}));
+            extraMusical.appendChild(buildWork(data.title));
 
             // Add identification (creator, encoding, and miscellaneous fields)
-            extraMusical.appendChild(buildIdentification({
-                            creator: {name: data.creator.name},
-                            encoder: data.encoder,
-                            encoding_date: data.encoding_date,
-                            miscellaneous_fields: data.miscellaneous_fields
-                        }));
+            extraMusical.appendChild(buildIdentification(data.identification));
 
             return extraMusical;
         }
@@ -191,57 +205,74 @@ package eu.claudius.iacob.music.builders {
 
         /**
          * Builds the <scaling> element.
-         * @param data An object containing:
-         *   - millimeters: Number (Real-world size of a "tenths" unit, e.g., 6.7744)
-         *   - tenths: Number (Relative unit size in MusicXML, e.g., 40)
-         * @return XML representing the <scaling> element.
+         * @param millimeters: String (Real-world size of a "tenths" unit, e.g., 6.7744)
+         * @param tenths: String (Relative unit size in MusicXML, e.g., 40)
+         * @return  XML representing the <scaling> element. Can be empty if both values
+         *          are empty.
          */
-        protected static function buildScaling(data:Object):XML {
-            return <scaling>
-                <millimeters>{data.millimeters}</millimeters>
-                <tenths>{data.tenths}</tenths>
-            </scaling>;
+        protected static function buildScaling(millimeters:String, tenths:String):XML {
+            const $millimeters:String = Strings.trim(millimeters || '');
+            const $tenths:String = Strings.trim(tenths || '');
+            const scaling:XML = <scaling/>;
+            if ($millimeters) {
+                scaling.appendChild(<millimeters>{$millimeters}</millimeters>);
+            }
+            if ($tenths) {
+                scaling.appendChild(<tenths>{$tenths}</tenths>);
+            }
+            return scaling;
         }
 
         /**
          * Builds the <page-layout> element (without margins).
-         * @param data An object containing:
-         *   - page_height: Number (Height of the page in millimeters, e.g., 1753.66)
-         *   - page_width: Number (Width of the page in millimeters, e.g., 1239.96)
-         * @return XML representing the <page-layout> element (without margins).
+         * @param width:String (Width of the page in millimeters, e.g., 1239.96)
+         * @param height: Number (Height of the page in millimeters, e.g., 1753.66)
+         * @return  XML representing the <page-layout> element (without margins).
+         *          Can be empty if both width and height are empty.
          */
-        protected static function buildPageLayout(data:Object):XML {
-            var pageLayout:XML = <page-layout>
-                <page-height>{data.page_height}</page-height>
-                <page-width>{data.page_width}</page-width>
-            </page-layout>;
-
+        protected static function buildPageLayout(width:String, height:String):XML {
+            const pageLayout:XML = <page-layout />;
+            const $width:String = Strings.trim(width || '');
+            const $height:String = Strings.trim(height || '');
+            if ($width && $height) {
+                pageLayout.appendChild(<page-width>{$width}</page-width>);
+                pageLayout.appendChild(<page-height>{$height}</page-height>);
+            }
             return pageLayout;
         }
 
         /**
          * Builds the <page-margins> element.
-         * @param data An object containing:
-         *   - left_margin: Number (Margin on the left, e.g., 59.0458)
-         *   - right_margin: Number (Margin on the right, e.g., 59.0458)
-         *   - top_margin: Number (Margin on the top, e.g., 206.66)
-         *   - bottom_margin: Number (Margin at the bottom, e.g., 59.0458)
-         *   - type: String (Optional: "both", "odd", or "even" to indicate page type)
-         * @return XML representing the <page-margins> element.
+         * @param left: String (Margin on the left, e.g., 59.0458)
+         * @param right: String (Margin on the right, e.g., 59.0458)
+         * @param top: String (Margin on the top, e.g., 206.66)
+         * @param bottom: String (Margin at the bottom, e.g., 59.0458)
+         * @param type: String (Optional: "both", "odd", "even" to indicate page type)
+         * @return  XML representing the <page-margins> element. Can be empty if
+         *          any of the margins are empty.
          */
-        protected static function buildPageMargins(data:Object):XML {
-            var pageMargins:XML = <page-margins/>;
+        protected static function buildPageMargins(
+                left:String,
+                right:String,
+                top:String,
+                bottom:String,
+                type:String = null
+            ):XML {
+            const pageMargins:XML = <page-margins/>;
 
-            // Add type attribute if provided
-            if (data.type) {
-                pageMargins.@type = data.type;
+            const $left:String = Strings.trim(left || '');
+            const $right:String = Strings.trim(right || '');
+            const $top:String = Strings.trim(top || '');
+            const $bottom:String = Strings.trim(bottom || '');
+            if ($left && $right && $top && $bottom) {
+                pageMargins.appendChild(<left-margin>{$left}</left-margin>);
+                pageMargins.appendChild(<right-margin>{$right}</right-margin>);
+                pageMargins.appendChild(<top-margin>{$top}</top-margin>);
+                pageMargins.appendChild(<bottom-margin>{$bottom}</bottom-margin>);
+                if (type && (type == "both" || type == "odd" || type == "even")) {
+                    pageMargins.@type = type;
+                }
             }
-
-            pageMargins.appendChild(<left-margin>{data.left_margin}</left-margin>);
-            pageMargins.appendChild(<right-margin>{data.right_margin}</right-margin>);
-            pageMargins.appendChild(<top-margin>{data.top_margin}</top-margin>);
-            pageMargins.appendChild(<bottom-margin>{data.bottom_margin}</bottom-margin>);
-
             return pageMargins;
         }
 
@@ -251,23 +282,22 @@ package eu.claudius.iacob.music.builders {
 
         /**
          * Builds the <page-layout> element, including <page-margins>.
-         * @param data An object containing:
-         *   - page_height: Number (Height of the page in millimeters)
-         *   - page_width: Number (Width of the page in millimeters)
-         *   - page_margins: Object
-         *       - left_margin: Number (Margin on the left)
-         *       - right_margin: Number (Margin on the right)
-         *       - top_margin: Number (Margin on the top)
-         *       - bottom_margin: Number (Margin at the bottom)
-         *       - type: String (Optional: "both", "odd", "even")
+         * @param width:String (Width of the page in millimeters, e.g., 1239.96)
+         * @param height: Number (Height of the page in millimeters, e.g., 1753.66)
+         * @param margins: PageMargins object containing:
+         *  - left: String (Margin on the left, e.g., 59.0458)
+         * - right: String (Margin on the right, e.g., 59.0458)
+         * - top: String (Margin on the top, e.g., 206.66)
+         * - bottom: String (Margin at the bottom, e.g., 59.0458)
+         * - type: String (Optional: "both", "odd", "even" to indicate page type)
          * @return XML representing the <page-layout> element.
          */
-        protected static function buildFullPageLayout(data:Object):XML {
-            var pageLayout:XML = buildPageLayout({page_height: data.page_height, page_width: data.page_width});
+        protected static function buildFullPageLayout(width:String, height:String,
+                margins:PageMargins):XML {
+            const pageLayout:XML = buildPageLayout(width, height);
 
-            if (data.page_margins) {
-                pageLayout.appendChild(buildPageMargins(data.page_margins));
-            }
+            pageLayout.appendChild(buildPageMargins(margins.left, margins.right,
+                        margins.top, margins.bottom, margins.type));
 
             return pageLayout;
         }
@@ -278,29 +308,31 @@ package eu.claudius.iacob.music.builders {
 
         /**
          * Builds the entire <defaults> section, which contains <scaling> and <page-layout>.
-         * @param data An object containing:
-         *   - scaling: Object
-         *       - millimeters: Number (Scaling unit size)
-         *       - tenths: Number (Relative unit size)
-         *   - page_layout: Object
-         *       - page_height: Number (Height of the page)
-         *       - page_width: Number (Width of the page)
-         *       - page_margins: Object
-         *           - left_margin: Number (Margin on the left)
-         *           - right_margin: Number (Margin on the right)
-         *           - top_margin: Number (Margin on the top)
-         *           - bottom_margin: Number (Margin at the bottom)
-         *           - type: String (Optional: "both", "odd", "even")
+         * @param width : String (Width of the page in millimeters, e.g., 1239.96)
+         * @param height: String (Height of the page in millimeters, e.g., 1753.66)
+         * 
+         * @param margins: PageMargins object containing:
+         * - left: String (Margin on the left, e.g., 59.0458)
+         * - right: String (Margin on the right, e.g., 59.0458)
+         * - top: String (Margin on the top, e.g., 206.66)
+         * - bottom: String (Margin at the bottom, e.g., 59.0458)
+         * - type: String (Optional: "both", "odd", "even" to indicate page type)
+         * 
+         * @param scaling: Scaling object containing:
+         * - millimeters: String (Real-world size of a "tenths" unit, e.g., 6.7744)
+         * - tenths: String (Relative unit size in MusicXML, e.g., 40)
+         * 
          * @return XML representing the entire <defaults> section.
          */
-        public static function buildPresentationDefaults(data:Object):XML {
-            var defaults:XML = <defaults/>;
+        public static function buildPresentationDefaults(width:String, height:String,
+                margins:PageMargins, scaling:Scaling):XML {
+            const defaults:XML = <defaults/>;
 
             // Add scaling
-            defaults.appendChild(buildScaling(data.scaling));
+            defaults.appendChild(buildScaling(scaling.millimeters, scaling.tenths));
 
             // Add full page layout including margins
-            defaults.appendChild(buildFullPageLayout(data.page_layout));
+            defaults.appendChild(buildFullPageLayout(width, height, margins));
 
             return defaults;
         }
@@ -713,6 +745,7 @@ package eu.claudius.iacob.music.builders {
         // =====================
         // V. FULL DOCUMENT
         // =====================
+
         /**
          * Builds the full MusicXML document as a <score-partwise> element.
          * @param data An object containing:

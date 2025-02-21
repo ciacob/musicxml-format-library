@@ -1,0 +1,47 @@
+{
+  "compilerOptions": {
+    "advanced-telemetry": false,
+    "keep-as3-metadata": [
+      "Minimum",
+      "Maximum",
+      "Description",
+      "Index",
+      "Advanced",
+      "ListFontSize",
+      "EditorFontSize"
+    ],
+    "library-path": [
+      "d:\\_DEV_\\github\\actionscript\\utils-library\\bin"
+    ],
+    "output": "bin/musicxml-format-library.swc",
+    "include-sources": [
+      "src"
+    ],
+    "source-path": [
+      "src"
+    ]
+  },
+  "airOptions": {
+    "windows": {
+      "files": [
+        {
+          "file": "d:\\_DEV_\\github\\actionscript\\maidens\\bin\\winnative",
+          "path": "winnative"
+        },
+        {
+          "file": "d:\\_DEV_\\github\\actionscript\\maidens\\bin\\assets",
+          "path": "assets"
+        }
+      ],
+      "target": "bundle",
+      "output": "dist-src",
+      "signingOptions": {
+        "storetype": "pkcs12",
+        "keystore": "d:\\_BUILD_\\p12\\ciacob.pfx"
+      }
+    }
+  },
+  "config": "air",
+  "type": "lib",
+  "copySourcePathAssets": true
+}
