@@ -1,19 +1,7 @@
 package eu.claudius.iacob.music.wrappers {
 
     /**
-     * Wrapping class for the scaling element. Specifies the relationship between
-     * MusicXML’s "tenths" unit and real-world measurements in millimeters.
-     * @param   `millimeters`: Defines the length of one staff space in millimeters.
-     *
-     * @param   `tenths`: Defines the length of one staff space in tenths (MusicXML’s
-     *          internal unit for positioning elements).
-     *
-     * ## Example:
-     * If `<millimeters>7.0</millimeters>` and `<tenths>40</tenths>`, the
-     * resulting scaling factor is `7.0 / 40 = 0.175 mm per tenth`.
-     * 
-     * A higher `tenths` value makes the score appear smaller, while a larger 
-     * `millimeters` value makes it appear larger.
+     * Data wrapper for the \<scaling\> MusicXML element.
      */
     public class Scaling {
         public function Scaling(millimeters:String, tenths:String) {

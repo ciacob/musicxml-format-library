@@ -1,7 +1,7 @@
 package eu.claudius.iacob.music.wrappers {
 
     /**
-     * The Creator class is a wrapper for the MusicXML Creator element.
+     * Data wrapper for the \<creator\> element of \<identification\>.
      */
     public class Creator {
         public function Creator(creatorType:String, creatorName:String) {

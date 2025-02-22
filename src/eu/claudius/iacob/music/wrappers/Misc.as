@@ -2,7 +2,7 @@ package eu.claudius.iacob.music.wrappers
 {
 
     /**
-     * The Misc class is a wrapper for the MusicXML Misc element.
+     * Data wrapper for one \<miscellaneous-field\> MusicXML element.
      */
     public class Misc {
         public function Misc (fieldName : String, fieldValue : String) {

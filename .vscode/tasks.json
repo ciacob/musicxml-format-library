@@ -2,20 +2,236 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "MASCOT: compile debug",
+      "label": "MASCOT: build dependency #1 (debug)",
+      "type": "shell",
+      "command": "asconfigc",
+      "args": [
+        "--sdk",
+        "d:\\_BUILD_\\AS3\\AIR_51.1.3_Flex_4.16.1\\bin",
+        "--project",
+        "d:\\_DEV_\\github\\actionscript\\scale-bitmap-library",
+        "--debug=true"
+      ],
+      "group": {
+        "kind": "none",
+        "isDefault": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "MASCOT: build dependency #2 (debug)",
+      "type": "shell",
+      "command": "asconfigc",
+      "args": [
+        "--sdk",
+        "d:\\_BUILD_\\AS3\\AIR_51.1.3_Flex_4.16.1\\bin",
+        "--project",
+        "d:\\_DEV_\\github\\actionscript\\fraction-library",
+        "--debug=true"
+      ],
+      "group": {
+        "kind": "none",
+        "isDefault": false
+      },
+      "problemMatcher": [],
+      "dependsOn": "MASCOT: build dependency #1 (debug)"
+    },
+    {
+      "label": "MASCOT: build dependency #3 (debug)",
+      "type": "shell",
+      "command": "asconfigc",
+      "args": [
+        "--sdk",
+        "d:\\_BUILD_\\AS3\\AIR_51.1.3_Flex_4.16.1\\bin",
+        "--project",
+        "d:\\_DEV_\\github\\actionscript\\as3corelib-library",
+        "--debug=true"
+      ],
+      "group": {
+        "kind": "none",
+        "isDefault": false
+      },
+      "problemMatcher": [],
+      "dependsOn": "MASCOT: build dependency #2 (debug)"
+    },
+    {
+      "label": "MASCOT: build dependency #4 (debug)",
+      "type": "shell",
+      "command": "asconfigc",
+      "args": [
+        "--sdk",
+        "d:\\_BUILD_\\AS3\\AIR_51.1.3_Flex_4.16.1\\bin",
+        "--project",
+        "d:\\_DEV_\\github\\actionscript\\fxmarker",
+        "--debug=true"
+      ],
+      "group": {
+        "kind": "none",
+        "isDefault": false
+      },
+      "problemMatcher": [],
+      "dependsOn": "MASCOT: build dependency #3 (debug)"
+    },
+    {
+      "label": "MASCOT: build dependency #5 (debug)",
+      "type": "shell",
+      "command": "asconfigc",
+      "args": [
+        "--sdk",
+        "d:\\_BUILD_\\AS3\\AIR_51.1.3_Flex_4.16.1\\bin",
+        "--project",
+        "d:\\_DEV_\\github\\actionscript\\disc-io-library",
+        "--debug=true"
+      ],
+      "group": {
+        "kind": "none",
+        "isDefault": false
+      },
+      "problemMatcher": [],
+      "dependsOn": "MASCOT: build dependency #4 (debug)"
+    },
+    {
+      "label": "MASCOT: build dependency #6 (debug)",
+      "type": "shell",
+      "command": "asconfigc",
+      "args": [
+        "--sdk",
+        "d:\\_BUILD_\\AS3\\AIR_51.1.3_Flex_4.16.1\\bin",
+        "--project",
+        "d:\\_DEV_\\github\\actionscript\\utils-library",
+        "--debug=true"
+      ],
+      "group": {
+        "kind": "none",
+        "isDefault": false
+      },
+      "problemMatcher": [],
+      "dependsOn": "MASCOT: build dependency #5 (debug)"
+    },
+    {
+      "label": "MASCOT: compile debug (with deps)",
       "type": "actionscript",
       "debug": true,
       "asconfig": "asconfig.json",
       "group": "build",
+      "problemMatcher": [],
+      "dependsOn": "MASCOT: build dependency #6 (debug)"
+    },
+    {
+      "label": "MASCOT: build dependency #1 (release)",
+      "type": "shell",
+      "command": "asconfigc",
+      "args": [
+        "--sdk",
+        "d:\\_BUILD_\\AS3\\AIR_51.1.3_Flex_4.16.1\\bin",
+        "--project",
+        "d:\\_DEV_\\github\\actionscript\\scale-bitmap-library",
+        "--debug=false"
+      ],
+      "group": {
+        "kind": "none",
+        "isDefault": false
+      },
       "problemMatcher": []
     },
     {
-      "label": "MASCOT: compile release",
+      "label": "MASCOT: build dependency #2 (release)",
+      "type": "shell",
+      "command": "asconfigc",
+      "args": [
+        "--sdk",
+        "d:\\_BUILD_\\AS3\\AIR_51.1.3_Flex_4.16.1\\bin",
+        "--project",
+        "d:\\_DEV_\\github\\actionscript\\fraction-library",
+        "--debug=false"
+      ],
+      "group": {
+        "kind": "none",
+        "isDefault": false
+      },
+      "problemMatcher": [],
+      "dependsOn": "MASCOT: build dependency #1 (release)"
+    },
+    {
+      "label": "MASCOT: build dependency #3 (release)",
+      "type": "shell",
+      "command": "asconfigc",
+      "args": [
+        "--sdk",
+        "d:\\_BUILD_\\AS3\\AIR_51.1.3_Flex_4.16.1\\bin",
+        "--project",
+        "d:\\_DEV_\\github\\actionscript\\as3corelib-library",
+        "--debug=false"
+      ],
+      "group": {
+        "kind": "none",
+        "isDefault": false
+      },
+      "problemMatcher": [],
+      "dependsOn": "MASCOT: build dependency #2 (release)"
+    },
+    {
+      "label": "MASCOT: build dependency #4 (release)",
+      "type": "shell",
+      "command": "asconfigc",
+      "args": [
+        "--sdk",
+        "d:\\_BUILD_\\AS3\\AIR_51.1.3_Flex_4.16.1\\bin",
+        "--project",
+        "d:\\_DEV_\\github\\actionscript\\fxmarker",
+        "--debug=false"
+      ],
+      "group": {
+        "kind": "none",
+        "isDefault": false
+      },
+      "problemMatcher": [],
+      "dependsOn": "MASCOT: build dependency #3 (release)"
+    },
+    {
+      "label": "MASCOT: build dependency #5 (release)",
+      "type": "shell",
+      "command": "asconfigc",
+      "args": [
+        "--sdk",
+        "d:\\_BUILD_\\AS3\\AIR_51.1.3_Flex_4.16.1\\bin",
+        "--project",
+        "d:\\_DEV_\\github\\actionscript\\disc-io-library",
+        "--debug=false"
+      ],
+      "group": {
+        "kind": "none",
+        "isDefault": false
+      },
+      "problemMatcher": [],
+      "dependsOn": "MASCOT: build dependency #4 (release)"
+    },
+    {
+      "label": "MASCOT: build dependency #6 (release)",
+      "type": "shell",
+      "command": "asconfigc",
+      "args": [
+        "--sdk",
+        "d:\\_BUILD_\\AS3\\AIR_51.1.3_Flex_4.16.1\\bin",
+        "--project",
+        "d:\\_DEV_\\github\\actionscript\\utils-library",
+        "--debug=false"
+      ],
+      "group": {
+        "kind": "none",
+        "isDefault": false
+      },
+      "problemMatcher": [],
+      "dependsOn": "MASCOT: build dependency #5 (release)"
+    },
+    {
+      "label": "MASCOT: compile release (with deps)",
       "type": "actionscript",
       "debug": false,
       "asconfig": "asconfig.json",
       "group": "build",
-      "problemMatcher": []
+      "problemMatcher": [],
+      "dependsOn": "MASCOT: build dependency #6 (release)"
     }
   ]
 }

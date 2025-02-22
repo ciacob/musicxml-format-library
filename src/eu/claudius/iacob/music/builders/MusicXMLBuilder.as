@@ -5,6 +5,15 @@ package eu.claudius.iacob.music.builders {
     import eu.claudius.iacob.music.wrappers.Identification;
     import eu.claudius.iacob.music.wrappers.PageMargins;
     import eu.claudius.iacob.music.wrappers.Scaling;
+    import eu.claudius.iacob.music.wrappers.Group;
+    import eu.claudius.iacob.music.wrappers.PartInfo;
+    import eu.claudius.iacob.music.wrappers.Note;
+    import eu.claudius.iacob.music.wrappers.Pitch;
+    import eu.claudius.iacob.music.wrappers.Attributes;
+    import eu.claudius.iacob.music.wrappers.Direction;
+    import eu.claudius.iacob.music.wrappers.PartContent;
+    import eu.claudius.iacob.music.wrappers.Measure;
+    import eu.claudius.iacob.music.wrappers.Score;
 
     /**
      * A utility class for building the Extra-Musical Context section of a MusicXML file using E4X.
@@ -24,58 +33,58 @@ package eu.claudius.iacob.music.builders {
         // -----------------------------
 
         /**
-         * Builds the <work-title> element.
+         * Builds the \<work-title\> element.
          * @param title: String (The title of the score)
-         * @return XML representing the <work-title> element or null for an empty title.
+         * @return XML representing the \<work-title\> element or null for an empty title.
          */
         protected static function buildWorkTitle(title:String):XML {
             const $title:String = Strings.trim(title || '');
-            return $title ? <work-title>{$title}</work-title>             : null;
+            return $title ? <work-title>{$title}</work-title>                                          : null;
         }
 
         /**
-         * Builds the <creator> element.
+         * Builds the \<creator\> element.
          * @param type: String (The type of creator, e.g., "composer")
          * @param name: String (The name of the creator)
-         * @return XML representing the <creator> element or null for empty type or name.
+         * @return XML representing the \<creator\> element or null for empty type or name.
          */
         protected static function buildCreator(type:String, name:String):XML {
             const $type:String = Strings.trim(type || '');
             const $name:String = Strings.trim(name || '');
-            return ($type && $name) ? <creator type={$type}>{$name}</creator>             : null;
+            return ($type && $name) ? <creator type={$type}>{$name}</creator>                                          : null;
         }
 
         /**
-         * Builds the <encoder> element.
+         * Builds the \<encoder\> element.
          * @param encoder: String (The name/version of the software that encoded the file)
-         * @return XML representing the <encoder> element, or null for an empty encoder.
+         * @return XML representing the \<encoder\> element, or null for an empty encoder.
          */
         protected static function buildEncoder(encoder:String):XML {
             const $encoder:String = Strings.trim(encoder || '');
-            return $encoder ? <encoder>{$encoder}</encoder>             : null;
+            return $encoder ? <encoder>{$encoder}</encoder>                                          : null;
         }
 
         /**
-         * Builds the <encoding-date> element.
+         * Builds the \<encoding-date\> element.
          * @param encodingDate: String (The date when the file was encoded, e.g., "YYYY-MM-DD")
-         * @return XML representing the <encoding-date> element, or null for an empty date.
+         * @return XML representing the \<encoding-date\> element, or null for an empty date.
          */
         protected static function buildEncodingDate(encodingDate:String):XML {
             const $date:String = Strings.trim(encodingDate || '');
-            return $date ? <encoding-date>{$date}</encoding-date>             : null;
+            return $date ? <encoding-date>{$date}</encoding-date>                                          : null;
         }
 
         /**
-         * Builds a <miscellaneous-field> element.
+         * Builds a \<miscellaneous-field\> element.
          * @param miscName: String (The name of the miscellaneous field, e.g., "history", "notes")
          * @param miscVal: String (The textual content of the field)
-         * @return XML representing a <miscellaneous-field> element, or null for empty name or value.
+         * @return XML representing a \<miscellaneous-field\> element, or null for empty name or value.
          */
         protected static function buildMiscellaneousField(miscName:String, miscVal:String):XML {
             const $name:String = Strings.trim(miscName || '');
             const $value:String = Strings.trim(miscVal || '');
             return ($name && $value) ?
-                <miscellaneous-field name={$name}>{$value}</miscellaneous-field>             : null;
+                <miscellaneous-field name={$name}>{$value}</miscellaneous-field>                                          : null;
         }
 
         // --------------------------------
@@ -83,9 +92,9 @@ package eu.claudius.iacob.music.builders {
         // --------------------------------
 
         /**
-         * Builds the <work> element containing <work-title>.
+         * Builds the \<work\> element containing \<work-title\>.
          * @param workTitle String (The title of the score)
-         * @return XML representing the <work> element. Can be empty if the title is empty.
+         * @return XML representing the \<work\> element. Can be empty if the title is empty.
          */
         protected static function buildWork(workTitle:String):XML {
             var work:XML = <work/>;
@@ -94,10 +103,10 @@ package eu.claudius.iacob.music.builders {
         }
 
         /**
-         * Builds the <encoding> element containing <encoder> and <encoding-date>.
+         * Builds the \<encoding\> element containing \<encoder\> and \<encoding-date\>.
          * @param encoder: String (The name/version of the encoding software).
          * @param encodingDate: String (The encoding date).
-         * @return  XML representing the <encoding> element. Can be empty if both
+         * @return  XML representing the \<encoding\> element. Can be empty if both
          *          encoder and date are empty.
          */
         protected static function buildEncoding(encoder:String, encodingDate:String):XML {
@@ -108,11 +117,9 @@ package eu.claudius.iacob.music.builders {
         }
 
         /**
-         * Builds the <miscellaneous> element containing multiple <miscellaneous-field> elements.
-         * @param miscElements: Vector of `Misc` objects, each containing:
-         *       - fieldName: String (The name of the field, e.g., "history", "notes")
-         *       - fieldValue: String (The textual content of the field)
-         * @return XML representing the <miscellaneous> element. Can be empty if no fields are provided.
+         * Builds the \<miscellaneous\> element containing multiple \<miscellaneous-field\> elements.
+         * @param miscElements: Vector of `Misc` instances.
+         * @return XML representing the \<miscellaneous\> element. Can be empty if no fields are provided.
          */
         protected static function buildMiscellaneous(miscElements:Vector.<Misc>):XML {
             var miscellaneous:XML = <miscellaneous/>;
@@ -126,37 +133,27 @@ package eu.claudius.iacob.music.builders {
         }
 
         /**
-         * Builds the <identification> element containing <creator>, <encoding>, and <miscellaneous>.
-         * @param data An object containing:
-         *   - creators: Vector of `Creator` objects, each containing:
-         *      - creatorType: String (The type of creator, e.g., "composer")
-         *      - creatorName: String (The name of the creator)
-         
-         *   - encoder: String (The encoding software name/version)
-         *   - encodingDate: String (The encoding date)
-         *
-         *   - miscFields: Vector of `Misc` objects, each containing:
-         *      - fieldName: String (The name of the field, e.g., "history", "notes")
-         *      - fieldValue: String (The textual content of the field)
-         * @return XML representing the <identification> element.
+         * Builds the \<identification\> element containing \<creator\>, \<encoding\>, and \<miscellaneous\>.
+         * @param iData - An Identification instance.
+         * @return XML representing the \<identification\> element.
          */
-        protected static function buildIdentification(data:Identification):XML {
+        protected static function buildIdentification(iData:Identification):XML {
             var identification:XML = <identification/>;
 
             // Add creators (composer, lyricist, etc.)
-            if (data.creators && data.creators.length > 0) {
-                for each (var creator:Creator in data.creators) {
+            if (iData.creators && iData.creators.length > 0) {
+                for each (var creator:Creator in iData.creators) {
                     identification.appendChild(
                             buildCreator(creator.creatorType, creator.creatorName));
                 }
             }
 
             // Add encoding information
-            identification.appendChild(buildEncoding(data.encoder, data.encodingDate));
+            identification.appendChild(buildEncoding(iData.encoder, iData.encodingDate));
 
             // Add miscellaneous metadata (history, notes, etc.)
-            if (data.miscFields && data.miscFields.length > 0) {
-                identification.appendChild(buildMiscellaneous(data.miscFields));
+            if (iData.miscFields && iData.miscFields.length > 0) {
+                identification.appendChild(buildMiscellaneous(iData.miscFields));
             }
 
             return identification;
@@ -168,31 +165,23 @@ package eu.claudius.iacob.music.builders {
 
         /**
          * Builds the entire "Extra-Musical Context" section as XML.
+         * @param root: XML (The root element of the MusicXML document)
          * @param title: String (The title of the score)
-         * @param identification: Identification object containing:
-         * - creators: Vector of `Creator` objects, each containing:
-         *   - creatorType: String (The type of creator, e.g., "composer")
-         *   - creatorName: String (The name of the creator)
+         * @param identification: Identification instance.
          *
-         * - encoder: String (The encoding software name/version)
-         * - encodingDate: String (The encoding date)
-         *
-         * - miscFields: Vector of `Misc` objects, each containing:
-         *   - fieldName: String (The name of the field, e.g., "history", "notes")
-         *   - fieldValue: String (The textual content of the field)
-         
-         * @return XML representing the <extra-musical-context> section.
+         * Note: does not return a value. Operates directly on the provided XML root.
          */
-        public static function buildExtraMusicalContent(data:Object):XML {
-            var extraMusical:XML = <extra-musical-context/>;
+        public static function addExtraMusicalContent(root:XML, title:String, identification:Identification):void {
+
+            if (!root) {
+                return;
+            }
 
             // Add work information
-            extraMusical.appendChild(buildWork(data.title));
+            root.appendChild(buildWork(title));
 
             // Add identification (creator, encoding, and miscellaneous fields)
-            extraMusical.appendChild(buildIdentification(data.identification));
-
-            return extraMusical;
+            root.appendChild(buildIdentification(identification));
         }
 
         // =============================
@@ -204,7 +193,7 @@ package eu.claudius.iacob.music.builders {
         // -----------------------------
 
         /**
-         * Builds the <scaling> element.
+         * Builds the \<scaling\> element.
          * @param millimeters: String (Real-world size of a "tenths" unit, e.g., 6.7744)
          * @param tenths: String (Relative unit size in MusicXML, e.g., 40)
          * @return  XML representing the <scaling> element. Can be empty if both values
@@ -224,10 +213,10 @@ package eu.claudius.iacob.music.builders {
         }
 
         /**
-         * Builds the <page-layout> element (without margins).
+         * Builds the \<page-layout\> element (without margins).
          * @param width:String (Width of the page in millimeters, e.g., 1239.96)
          * @param height: Number (Height of the page in millimeters, e.g., 1753.66)
-         * @return  XML representing the <page-layout> element (without margins).
+         * @return  XML representing the \<page-layout\> element (without margins).
          *          Can be empty if both width and height are empty.
          */
         protected static function buildPageLayout(width:String, height:String):XML {
@@ -242,13 +231,13 @@ package eu.claudius.iacob.music.builders {
         }
 
         /**
-         * Builds the <page-margins> element.
+         * Builds the \<page-margins\> element.
          * @param left: String (Margin on the left, e.g., 59.0458)
          * @param right: String (Margin on the right, e.g., 59.0458)
          * @param top: String (Margin on the top, e.g., 206.66)
          * @param bottom: String (Margin at the bottom, e.g., 59.0458)
          * @param type: String (Optional: "both", "odd", "even" to indicate page type)
-         * @return  XML representing the <page-margins> element. Can be empty if
+         * @return  XML representing the \<page-margins\> element. Can be empty if
          *          any of the margins are empty.
          */
         protected static function buildPageMargins(
@@ -281,16 +270,11 @@ package eu.claudius.iacob.music.builders {
         // --------------------------------
 
         /**
-         * Builds the <page-layout> element, including <page-margins>.
+         * Builds the \<page-layout\> element, including <page-margins>.
          * @param width:String (Width of the page in millimeters, e.g., 1239.96)
          * @param height: Number (Height of the page in millimeters, e.g., 1753.66)
-         * @param margins: PageMargins object containing:
-         *  - left: String (Margin on the left, e.g., 59.0458)
-         * - right: String (Margin on the right, e.g., 59.0458)
-         * - top: String (Margin on the top, e.g., 206.66)
-         * - bottom: String (Margin at the bottom, e.g., 59.0458)
-         * - type: String (Optional: "both", "odd", "even" to indicate page type)
-         * @return XML representing the <page-layout> element.
+         * @param margins: PageMargins instance.
+         * @return XML representing the \<page-layout\> element.
          */
         protected static function buildFullPageLayout(width:String, height:String,
                 margins:PageMargins):XML {
@@ -307,21 +291,12 @@ package eu.claudius.iacob.music.builders {
         // -----------------------------
 
         /**
-         * Builds the entire <defaults> section, which contains <scaling> and <page-layout>.
+         * Builds the entire \<defaults\> section, which contains \<scaling\> and \<page-layout\>.
          * @param width : String (Width of the page in millimeters, e.g., 1239.96)
          * @param height: String (Height of the page in millimeters, e.g., 1753.66)
-         * 
-         * @param margins: PageMargins object containing:
-         * - left: String (Margin on the left, e.g., 59.0458)
-         * - right: String (Margin on the right, e.g., 59.0458)
-         * - top: String (Margin on the top, e.g., 206.66)
-         * - bottom: String (Margin at the bottom, e.g., 59.0458)
-         * - type: String (Optional: "both", "odd", "even" to indicate page type)
-         * 
-         * @param scaling: Scaling object containing:
-         * - millimeters: String (Real-world size of a "tenths" unit, e.g., 6.7744)
-         * - tenths: String (Relative unit size in MusicXML, e.g., 40)
-         * 
+         * @param margins: PageMargins instance.
+         * @param scaling: Scaling instance.
+         *
          * @return XML representing the entire <defaults> section.
          */
         public static function buildPresentationDefaults(width:String, height:String,
@@ -346,22 +321,33 @@ package eu.claudius.iacob.music.builders {
         // -----------------------------
 
         /**
-         * Builds a <part-group> element (either start or stop).
-         * @param data An object containing:
-         *   - id: String (The unique identifier for the group)
-         *   - type: String ("start" or "stop")
-         *   - symbol: String (Optional, visual representation, e.g., "bracket")
-         *   - barlines: Boolean (Optional, whether barlines span across all staves)
+         * Builds a \<part-group\> element (either start or stop).
+         * @param id: String (The unique identifier for the group)
+         * @param type: String ("start" or "stop")
+         * @param symbol: String (Optional, visual representation, one of "brace", "bracket", "line", "none", "square")
+         * @param fullBarlines: Boolean (Optional, whether barlines span across all staves)
          * @return XML representing a <part-group> element.
          */
-        protected static function buildPartGroup(data:Object):XML {
-            var partGroup:XML = <part-group number={data.id} type={data.type}/>;
+        protected static function buildPartGroup(id:String, type:String,
+                symbol:String = null, fullBarlines:Boolean = false):XML {
 
-            if (data.type == "start") {
-                if (data.symbol) {
-                    partGroup.appendChild(<group-symbol>{data.symbol}</group-symbol>);
+            const $id:String = Strings.trim(id || '');
+            const $type:String = Strings.trim(type || '');
+            if (!$id || !$type) {
+                return null;
+            }
+            if ($type != "start" && $type != "stop") {
+                return null;
+            }
+
+            var partGroup:XML = <part-group number={$id} type={$type}/>;
+
+            if ($type == "start") {
+                const $symbol:String = Strings.trim(symbol || '');
+                if ($symbol && ['brace', 'bracket', 'line', 'none', 'square'].includes($symbol)) {
+                    partGroup.appendChild(<group-symbol>{$symbol}</group-symbol>);
                 }
-                if (data.barlines) {
+                if (fullBarlines) {
                     partGroup.appendChild(<group-barline>yes</group-barline>);
                 }
             }
@@ -370,30 +356,39 @@ package eu.claudius.iacob.music.builders {
         }
 
         /**
-         * Builds a <score-part> element.
-         * @param data An object containing:
-         *   - id: String (The unique identifier for the part)
-         *   - name: String (The full instrument name)
-         *   - abbreviation: String (The short instrument name)
-         *   - group: String (Optional, the group ID to which this part belongs)
-         *   - midi_channel: Number (MIDI playback channel)
-         *   - midi_program: Number (MIDI instrument patch number)
-         * @return XML representing a <score-part> element.
+         * Builds a \<score-part\> element.
+         * @param id: String (The unique identifier for the part)
+         * @param name: String (The full instrument name)
+         * @param abbreviation: String (The short instrument name)
+         * @param midiChannel: String (Optional, the MIDI playback channel)
+         * @param midiPatch: String (Optional, the MIDI instrument patch number)
+         * @return XML representing a <score-part> element. Can be empty if any of the
+         *         required fields are empty.
          */
-        protected static function buildScorePart(data:Object):XML {
-            var scorePart:XML = <score-part id={data.id}/>;
+        protected static function buildScorePart(
+                id:String, name:String, abbreviation:String,
+                midiChannel:String = null, midiPatch:String = null
+            ):XML {
+            const $id:String = Strings.trim(id || '');
+            const $name:String = Strings.trim(name || '');
+            const $abbreviation:String = Strings.trim(abbreviation || '');
+            if (!$id || !$name || !$abbreviation) {
+                return null;
+            }
+            var scorePart:XML = <score-part id={$id}/>;
 
-            scorePart.appendChild(<part-name>{data.name}</part-name>);
-            scorePart.appendChild(<part-abbreviation>{data.abbreviation}</part-abbreviation>);
-            scorePart.appendChild(<score-instrument id={data.id + "-inst"}/>);
+            scorePart.appendChild(<part-name>$name</part-name>);
+            scorePart.appendChild(<part-abbreviation>$abbreviation</part-abbreviation>);
+            scorePart.appendChild(<score-instrument id={$id + "-inst"}/>);
 
-            var midiInstrument:XML = <midi-instrument id={data.id + "-inst"}>
-                <midi-channel>{data.midi_channel}</midi-channel>
-                <midi-program>{data.midi_program}</midi-program>
-            </midi-instrument>;
-
-            scorePart.appendChild(midiInstrument);
-
+            const $midiChannel:String = Strings.trim(midiChannel || '');
+            const $midiPatch:String = Strings.trim(midiPatch || '');
+            if ($midiChannel && $midiPatch) {
+                var midiInstrument:XML = <midi-instrument id={$id + "-inst"}/>;
+                midiInstrument.appendChild(<midi-channel>{$midiChannel}</midi-channel>);
+                midiInstrument.appendChild(<midi-program>{$midiPatch}</midi-program>);
+                scorePart.appendChild(midiInstrument);
+            }
             return scorePart;
         }
 
@@ -403,19 +398,15 @@ package eu.claudius.iacob.music.builders {
 
         /**
          * Builds the part groups for the score.
-         * @param data An object containing:
-         *   - groups: Array of Objects
-         *       - id: String (The unique identifier for the group)
-         *       - symbol: String (Visual representation, e.g., "bracket")
-         *       - barlines: Boolean (Whether barlines span across all staves)
-         * @return XMLList representing the <part-group> elements.
+         * @param groups: Vector of `Group` instances.
+         * @return XMLList representing the \<part-group\> elements. Can be empty if no groups are provided.
          */
-        protected static function buildPartGroups(data:Object):XMLList {
+        protected static function buildPartGroups(groups:Vector.<Group>):XMLList {
             var partGroups:XMLList = new XMLList();
 
-            for each (var group:Object in data.groups) {
-                partGroups += buildPartGroup({id: group.id, type: "start", symbol: group.symbol, barlines: group.barlines});
-                partGroups += buildPartGroup({id: group.id, type: "stop"});
+            for each (var group:Group in groups) {
+                partGroups += buildPartGroup(group.id, "start", group.symbol, group.fullBarlines);
+                partGroups += buildPartGroup(group.id, "stop");
             }
 
             return partGroups;
@@ -423,21 +414,15 @@ package eu.claudius.iacob.music.builders {
 
         /**
          * Builds the score parts for the score.
-         * @param data An object containing:
-         *   - parts: Array of Objects
-         *       - id: String (The unique identifier for the part)
-         *       - name: String (The full instrument name)
-         *       - abbreviation: String (The short instrument name)
-         *       - group: String (Optional, the group ID to which this part belongs)
-         *       - midi_channel: Number (MIDI playback channel)
-         *       - midi_program: Number (MIDI instrument patch number)
-         * @return XMLList representing the <score-part> elements.
+         * @param parts: Vector of `ScorePart` instances.
+         * @return XMLList representing the \<score-part\> elements. Can be empty if no parts are provided.
          */
-        protected static function buildScoreParts(data:Object):XMLList {
+        protected static function buildScoreParts(parts:Vector.<PartInfo>):XMLList {
             var scoreParts:XMLList = new XMLList();
 
-            for each (var part:Object in data.parts) {
-                scoreParts += buildScorePart(part);
+            for each (var part:PartInfo in parts) {
+                scoreParts += buildScorePart(part.id, part.name, part.abbreviation,
+                        part.midiChannel, part.midiPatch);
             }
 
             return scoreParts;
@@ -448,71 +433,57 @@ package eu.claudius.iacob.music.builders {
         // -----------------------------
 
         /**
-         * Builds the entire <part-list> section, correctly inserting <part-group> start/stop markers around grouped parts.
-         * @param data An object containing:
-         *   - groups: Array of Objects (Defines part groups)
-         *       - id: String (The unique identifier for the group)
-         *       - symbol: String (Visual representation, e.g., "bracket")
-         *       - barlines: Boolean (Whether barlines span across all staves)
-         *   - parts: Array of Objects (Defines score parts)
-         *       - id: String (The unique identifier for the part)
-         *       - name: String (The full instrument name)
-         *       - abbreviation: String (The short instrument name)
-         *       - group: String (Optional, the group ID to which this part belongs)
-         *       - midi_channel: Number (MIDI playback channel)
-         *       - midi_program: Number (MIDI instrument patch number)
-         * @return XML representing the <part-list> section, with proper group handling.
+         * Builds the entire \<part-list\> section, correctly inserting \<part-group\> start/stop markers around grouped parts.
+         * @param parts: Vector of `ScorePart` instances.
+         * @param groups: Optional, Vector of `Group` instances.
+         *
+         * @return XML representing the \<part-list\> section, with proper group handling.
          */
-        public static function buildMusicalContext(data:Object):XML {
-            var partList:XML = <part-list/>;
+        public static function buildMusicalContext(parts:Vector.<PartInfo>, groups:Vector.<Group> = null):XML {
+            const partList:XML = <part-list/>;
 
             // If no groups exist, just append all parts without any special handling
-            if (!data.groups || data.groups.length == 0) {
-                partList.appendChild(buildScoreParts({parts: data.parts}));
+            if (!groups || groups.length == 0) {
+                partList.appendChild(buildScoreParts(parts));
                 return partList;
             }
 
             // Sort parts by group, preserving order of ungrouped parts
-            data.parts.sort(function (a:Object, b:Object):int {
-                    if (!a.group && !b.group)
+            parts.sort(function (a:PartInfo, b:PartInfo):int {
+                    if (!a.groupId && !b.groupId)
                         return 0; // Both ungrouped, keep original placement
-                    if (!a.group)
+                    if (!a.groupId)
                         return 0; // a is ungrouped, keep original placement
-                    if (!b.group)
+                    if (!b.groupId)
                         return 0; // b is ungrouped, keep original placement
-                    return a.group.localeCompare(b.group); // Sort grouped parts together
+                    return a.groupId.localeCompare(b.groupId); // Sort grouped parts together
                 });
 
             // Track group states
-            var groupStates:Object = {}; // { "groupID": "started" or "stopped" }
+            const groupStates:Object = {}; // { "<groupID>": "started" or "stopped" }
             var currentGroupID:String = null;
 
             // Loop through parts and handle grouping logic
-            for each (var part:Object in data.parts) {
-                if (part.group) {
+            for each (var part:PartInfo in parts) {
+                if (part.groupId) {
                     // If this part belongs to a group
-                    if (currentGroupID !== part.group) {
+                    if (currentGroupID !== part.groupId) {
                         // If switching to a new group
                         if (currentGroupID) {
                             // If a group was open, close it first
-                            partList.appendChild(buildPartGroup({id: currentGroupID, type: "stop"}));
+                            partList.appendChild(buildPartGroup(currentGroupID, "stop"));
                             groupStates[currentGroupID] = "stopped";
                             currentGroupID = null;
                         }
-                        if (!groupStates[part.group]) {
+                        if (!groupStates[part.groupId]) {
                             // Find the group definition by ID
-                            var groupData:Object = data.groups.filter(function (g:Object, ...rest):Boolean {
-                                    return g.id === part.group;
+                            var groupData:Group = groups.filter(function (g:Group, ...rest):Boolean {
+                                    return g.id === part.groupId;
                                 })[0];
 
                             if (groupData) {
                                 // Start a new group
-                                partList.appendChild(buildPartGroup({
-                                                id: groupData.id,
-                                                type: "start",
-                                                symbol: groupData.symbol,
-                                                barlines: groupData.barlines
-                                            }));
+                                partList.appendChild(buildPartGroup(groupData.id, "start", groupData.symbol, groupData.fullBarlines));
                                 groupStates[groupData.id] = "started";
                                 currentGroupID = groupData.id;
                             }
@@ -521,12 +492,13 @@ package eu.claudius.iacob.music.builders {
                 }
 
                 // Append the part
-                partList.appendChild(buildScorePart(part));
+                partList.appendChild(buildScorePart(part.id, part.name, part.abbreviation,
+                            part.midiChannel, part.midiPatch));
             }
 
             // Close any remaining open groups
             if (currentGroupID) {
-                partList.appendChild(buildPartGroup({id: currentGroupID, type: "stop"}));
+                partList.appendChild(buildPartGroup(currentGroupID, "stop"));
                 groupStates[currentGroupID] = "stopped";
             }
 
@@ -542,72 +514,282 @@ package eu.claudius.iacob.music.builders {
         // -----------------------------
 
         /**
-         * Builds the <pitch> element for a note.
-         * @param data An object containing:
-         *   - step: String (The note name, e.g., "A", "B", "C")
-         *   - alter: Number (Optional, 1 = sharp, -1 = flat, 0 or omitted = natural)
-         *   - octave: Number (Octave number)
-         * @return XML representing the <pitch> element.
+         * Builds the \<pitch\> element for a note.
+         * @param step: String (The note name, e.g., "A", "B", "C")
+         * @param octave: String (The octave number)
+         * @param alteration: String (Optional, e.g., "1", "-1", "0", etc.)
+         * @return XML representing the \<pitch\> element. Can be null if step or octave are empty.
          */
-        protected static function buildPitch(data:Object):XML {
-            var pitch:XML = <pitch>
-                <step>{data.step}</step>
-                <octave>{data.octave}</octave>
-            </pitch>;
+        protected static function buildPitch(step:String, octave:String, alteration:String = null):XML {
+            const pitch:XML = <pitch/>;
 
-            if (data.hasOwnProperty("alter")) {
-                pitch.appendChild(<alter>{data.alter}</alter>);
+            const $step:String = Strings.trim(step || '').toUpperCase();
+            const $octave:String = Strings.trim(octave || '');
+            if (!$step || !$octave) {
+                return null;
             }
+            if (!["C", "D", "E", "F", "G", "A", "B"].includes($step)) {
+                return null;
+            }
+            if (!['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'].includes($octave)) {
+                return null;
+            }
+            pitch.appendChild(<step>{$step}</step>);
+            pitch.appendChild(<octave>{$octave}</octave>);
 
+            const $alter:String = Strings.trim(alteration || '');
+            if ($alter) {
+                pitch.appendChild(<alter>{$alter}</alter>);
+            }
             return pitch;
         }
 
         /**
-         * Builds the <duration> element.
-         * @param data An object containing:
-         *   - duration: Number (The note duration value, as a number of divisions)
-         * @return XML representing the <duration> element.
+         * Builds the \<duration\> element.
+         * @param duration: String (The note duration value, as a number of divisions)
+         * @return XML representing the \<duration\> element. Can be null if duration is empty.
          */
-        protected static function buildDuration(data:Object):XML {
-            return <duration>{data.duration}</duration>;
+        protected static function buildDuration(duration:String):XML {
+            const $duration:String = Strings.trim(duration || '');
+            if (!$duration) {
+                return null;
+            }
+
+            return <duration>{duration}</duration>;
         }
 
         /**
-         * Builds the <type> element.
-         * @param data An object containing:
-         *   - type: String ("whole", "half", "quarter", "eighth", etc.)
-         * @return XML representing the <type> element.
+         * Builds the \<type\> element.
+         * @param type: String ("whole", "half", "quarter", "eighth", etc.)
+         * @return XML representing the \<type\> element. Can be null if type is empty or invalid.
          */
-        protected static function buildType(data:Object):XML {
-            return <type>{data.type}</type>;
+        protected static function buildType(type:String):XML {
+            const $type:String = Strings.trim(type || '');
+            if (!$type) {
+                return null;
+            }
+            const noteTypes:Array = [
+                    "1024th", "512th", "256th", "128th", "64th", "32nd", "16th",
+                    "eighth", "quarter", "half", "whole", "breve", "long", "maxima"
+                ];
+            if (!noteTypes.includes($type)) {
+                return null;
+            }
+
+            return <type>{type}</type>;
         }
 
         /**
-         * Builds the <tie> element.
-         * @param data An object containing:
-         *   - tie_type: String ("start" or "stop")
-         * @return XML representing the <tie> element.
+         * Builds the \<tie\> element.
+         * @param tieType: String (e.g., "start" or "stop")
+         * @return XML representing the \<tie\> element. Can be null if tieType is empty or invalid.
          */
-        protected static function buildTie(data:Object):XML {
-            return <tie type={data.tie_type}/>;
+        protected static function buildTie(tieType:String):XML {
+            const $tieType:String = Strings.trim(tieType || '');
+            if (!$tieType) {
+                return null;
+            }
+            const tieTypes:Array = ["start", "stop", "continue", "let-ring"];
+            if (!tieTypes.includes($tieType)) {
+                return null;
+            }
+            return <tie type={tieType}/>;
         }
 
         /**
-         * Builds the <accidental> element.
-         * @param data An object containing:
-         *   - accidental: String ("sharp", "flat", "natural", etc.)
-         * @return XML representing the <accidental> element.
+         * Builds the \<accidental\> element.
+         * @param accidental: String (e.g., "sharp", "flat", "natural", etc.)
+         * @return XML representing the \<accidental\> element. Can be null if accidental is empty or invalid.
          */
-        protected static function buildAccidental(data:Object):XML {
-            return <accidental>{data.accidental}</accidental>;
+        protected static function buildAccidental(accidental:String):XML {
+            const $accidental:String = Strings.trim(accidental || '');
+            if (!$accidental) {
+                return null;
+            }
+            const accidentalTypes:Array = [
+                    "sharp", "natural", "flat", "double-sharp",
+                    "double-flat", "natural-sharp", "natural-flat"
+                ];
+            if (!accidentalTypes.includes($accidental)) {
+                return null;
+            }
+
+            return <accidental>{accidental}</accidental>;
         }
 
         /**
-         * Builds the <dot> element.
-         * @return XML representing the <dot> element.
+         * Builds the \<divisions\> element.
+         * @param divisions: String (Rhythmic granularity of the quarter note)
+         * @return XML representing the \<divisions\> element. Can be null if divisions is empty.
+         */
+        protected static function buildDivisions(divisions:String):XML {
+            const $divisions:String = Strings.trim(divisions || '');
+            if (!$divisions) {
+                return null;
+            }
+
+            return <divisions>{divisions}</divisions>;
+        }
+
+        /**
+         * Builds the \<fifths\> element.
+         * @param fifths: String (Number of fifths in the key signature)
+         * @return XML representing the \<fifths\> element. Can be null if fifths is empty.
+         */
+        protected static function buildFifths(fifths:String):XML {
+            const $fifths:String = Strings.trim(fifths || '');
+            if (!$fifths) {
+                return null;
+            }
+
+            return <fifths>{fifths}</fifths>;
+        }
+
+        /**
+         * Builds the \<mode\> element.
+         * @param mode: String (The mode of the key signature, e.g., "major" or "minor")
+         * @return XML representing the \<mode\> element. Can be null if mode is empty.
+         */
+        protected static function buildMode(mode:String):XML {
+            const $mode:String = Strings.trim(mode || '');
+            if (!$mode) {
+                return null;
+            }
+            const modes:Array = ["major", "minor"];
+            if (!modes.includes($mode)) {
+                return null;
+            }
+
+            return <mode>{mode}</mode>;
+        }
+
+        /**
+         * Builds the \<beats\> element.
+         * @param beats: String (The number of beats in a measure)
+         * @return XML representing the \<beats\> element. Can be null if beats is empty.
+         */
+        protected static function buildBeats(beats:String):XML {
+            const $beats:String = Strings.trim(beats || '');
+            if (!$beats) {
+                return null;
+            }
+
+            return <beats>{beats}</beats>;
+        }
+
+        /**
+         * Builds the \<beat-type\> element.
+         * @param beatType: String (The note value that receives the beat, e.g., "4")
+         * @return XML representing the \<beat-type\> element. Can be null if beatType is empty.
+         */
+        protected static function buildBeatType(beatType:String):XML {
+            const $beatType:String = Strings.trim(beatType || '');
+            if (!$beatType) {
+                return null;
+            }
+
+            return <beat-type>{beatType}</beat-type>;
+        }
+
+        /**
+         * Builds the \<sign\> element.
+         * @param sign: String (The clef sign, e.g., "G", "F", "C", "percussion", "none")
+         * @return The XML representing the <sign> element. Can be null if sign is empty or invalid.
+         */
+        protected static function buildSign(sign:String):XML {
+            const $sign:String = Strings.trim(sign || '');
+            if (!$sign) {
+                return null;
+            }
+            const clefSigns:Array = ["G", "F", "C", "percussion", "none"];
+            if (!clefSigns.includes($sign)) {
+                return null;
+            }
+
+            return <sign>{$sign}</sign>;
+        }
+
+        /**
+         * Builds the \<line\> element.
+         * @param line: String (The clef line number, e.g., "1", "2", "3", etc.)
+         * @return XML representing the \<line\> element. Can be null if line is empty or invalid.
+         */
+        protected static function buildLine(line:String):XML {
+            const $line:String = Strings.trim(line || '');
+            if (!$line) {
+                return null;
+            }
+            const clefLines:Array = ["1", "2", "3", "4", "5"];
+            if (!clefLines.includes($line)) {
+                return null;
+            }
+
+            return <line>{$line}</line>;
+        }
+
+        /**
+         * Builds the \<dot\> element.
+         * @return XML representing the \<dot\> element.
          */
         protected static function buildDot():XML {
             return <dot/>;
+        }
+
+        /**
+         * Builds the \<sound\> element.
+         * @param tempo: String (The tempo of the note, e.g., "120")
+         * @return XML representing the \<sound\> element. Can be null if tempo is empty.
+         */
+        protected static function buildSound(tempo:String):XML {
+            const $tempo:String = Strings.trim(tempo || '');
+            if (!$tempo) {
+                return null;
+            }
+            return <sound tempo={$tempo}/>;
+        }
+
+        /**
+         * Builds the \<beat-unit\> element.
+         * @param beatUnit: String (The type of the beat unit, e.g., "quarter")
+         * @return XML representing the \<beat-unit\> element. Can be null if `beatUnit` is empty or invalid.
+         */
+        protected static function buildBeatUnit(beatUnit:String):XML {
+            const $beatUnit:String = Strings.trim(beatUnit || '');
+            if (!$beatUnit) {
+                return null;
+            }
+            const beatUnits:Array = ["whole", "half", "quarter", "eighth", "16th", "32nd", "64th", "128th"];
+            if (!beatUnits.includes($beatUnit)) {
+                return null;
+            }
+
+            return <beat-unit>{$beatUnit}</beat-unit>;
+        }
+
+        /**
+         * Builds the \<per-minute\> element.
+         * @param perMinute String (How many beat units to play in a minute, e.g., "120")
+         * @return XML representing the \<per-minute\> element. Can be null if `perMinute` is empty.
+         */
+        protected static function buildPerMinute(perMinute:String):XML {
+            const $perMinute:String = Strings.trim(perMinute || '');
+            if (!$perMinute) {
+                return null;
+            }
+            return <per-minute>{$perMinute}</per-minute>;
+        }
+
+        /**
+         * Builds the \<words\> element.
+         * @param words: String (Text to display as part of a <direction-type> element).
+         * @return XML representing the \<words\> element. Can be null if `words` is empty.
+         */
+        protected static function buildWords(words:String):XML {
+            const $words:String = Strings.trim(words || '');
+            if (!$words) {
+                return null;
+            }
+            return <words>{$words}</words>;
         }
 
         // -----------------------------
@@ -615,90 +797,214 @@ package eu.claudius.iacob.music.builders {
         // -----------------------------
 
         /**
-         * Builds the <note> element.
-         * @param data An object containing:
-         *   - pitch: Object (Optional, contains step, alter, octave)
-         *   - duration: Number (The note duration value)
-         *   - voice: Number (The polyphony layer)
-         *   - type: String ("whole", "half", "quarter", "eighth", etc.)
-         *   - tie: String (Optional, "start" or "stop")
-         *   - accidental: String (Optional, "sharp", "flat", etc.)
-         *   - dot: Boolean (Optional, true if dotted note)
-         * @return XML representing the <note> element.
+         * Builds the \<key\> element.
+         * @param fifths: String (Number of fifths in the key signature)
+         * @param mode: String (The mode of the key signature, e.g., "major" or "minor")
+         * @return XML representing the \<key\> element. Can be empty if fifths or mode are empty.
          */
-        protected static function buildNote(data:Object):XML {
-            var note:XML = <note/>;
+        protected static function buildKey(fifths:String, mode:String):XML {
+            var key:XML = <key/>;
 
-            if (data.pitch) {
-                note.appendChild(buildPitch(data.pitch));
+            key.appendChild(buildFifths(fifths));
+            key.appendChild(buildMode(mode));
+
+            return key;
+        }
+
+        /**
+         * Builds the \<time\> element.
+         * @param beats: String (The number of beats in a measure)
+         * @param beatType: String (The note value that receives the beat, e.g., "4")
+         * @return XML representing the \<time\> element. Can be empty if beats or beatType are empty.
+         */
+        protected static function buildTime(beats:String, beatType:String):XML {
+            var time:XML = <time/>;
+
+            time.appendChild(buildBeats(beats));
+            time.appendChild(buildBeatType(beatType));
+
+            return time;
+        }
+
+        /**
+         * Builds the \<clef\> element.
+         * @param sign: String (The clef sign, e.g., "G", "F", "C", "percussion", "none")
+         * @param line: String (The clef line number, e.g., "1", "2", "3", etc.)
+         * @return XML representing the \<clef\> element. Can be empty if sign or line are empty.
+         */
+        protected static function buildClef(sign:String, line:String):XML {
+            var clef:XML = <clef/>;
+
+            clef.appendChild(buildSign(sign));
+            clef.appendChild(buildLine(line));
+
+            return clef;
+        }
+
+        /**
+         * Builds the \<note\> element.
+         * @param noteData - a Note instance.
+         *
+         * @return XML representing the \<note\> element. Can be null or empty if missing or invalid input is given.
+         */
+        protected static function buildNote(noteData:Note):XML {
+            if (!noteData) {
+                return null;
+            }
+
+            const note:XML = <note/>;
+
+            const $pitch:Pitch = noteData.pitch;
+            if ($pitch) {
+                if (noteData.inChord) {
+                    note.appendChild(<chord/>);
+                }
+                note.appendChild(buildPitch($pitch.step, $pitch.octave, $pitch.alteration));
             }
             else {
                 note.appendChild(<rest/>);
             }
 
-            note.appendChild(buildDuration({duration: data.duration}));
-            note.appendChild(<voice>{data.voice}</voice>);
-            note.appendChild(buildType({type: data.type}));
+            note.appendChild(buildDuration(noteData.duration));
+            note.appendChild(<voice>{noteData.voice || "1"}</voice>);
+            note.appendChild(buildType(noteData.type));
 
-            if (data.dot) {
+            for (var i:int = 0; i < noteData.numDots; i++) {
                 note.appendChild(buildDot());
             }
-            if (data.tie) {
-                note.appendChild(buildTie({tie_type: data.tie}));
+            if (noteData.tie) {
+                note.appendChild(buildTie(noteData.tie));
             }
-            if (data.accidental) {
-                note.appendChild(buildAccidental({accidental: data.accidental}));
+            if (noteData.accidental) {
+                note.appendChild(buildAccidental(noteData.accidental));
             }
 
             return note;
         }
 
         /**
-         * Builds the <attributes> element.
-         * @param data An object containing:
-         *   - divisions: Number (Rhythmic granularity of the quarter note)
-         *   - key: Object (Contains fifths and mode)
-         *   - time: Object (Contains beats and beat-type)
-         *   - clef: Object (Contains sign and line)
-         * @return XML representing the <attributes> element.
+         * Builds the \<attributes\> element.
+         * @param aData An Attributes instance.
+         * 
+         * @return XML representing the \<attributes\> element.
          */
-        protected static function buildAttributes(data:Object):XML {
-            var attributes:XML = <attributes>
-                <divisions>{data.divisions}</divisions>
-                <key>
-                    <fifths>{data.key.fifths}</fifths>
-                    <mode>{data.key.mode}</mode>
-                </key>
-                <time>
-                    <beats>{data.time.beats}</beats>
-                    <beat-type>{data.time.beat_type}</beat-type>
-                </time>
-                <clef>
-                    <sign>{data.clef.sign}</sign>
-                    <line>{data.clef.line}</line>
-                </clef>
-            </attributes>;
-
+        protected static function buildAttributes(aData:Attributes):XML {
+            var attributes:XML = <attributes/>;
+            attributes.appendChild(buildDivisions(aData.divisions));
+            attributes.appendChild(buildKey(aData.fifths, aData.mode));
+            attributes.appendChild(buildTime(aData.beats, aData.beatType));
+            attributes.appendChild(buildClef(aData.sign, aData.line));
             return attributes;
         }
 
         /**
-         * Builds a <measure> element.
-         * @param data An object containing:
-         *   - number: Number (The measure number)
-         *   - attributes: Object (Optional, contains divisions, key, time, clef)
-         *   - directions: Array of Objects (Optional, contains tempo/metronome markings)
-         *   - notes: Array of Objects (Contains musical notes)
-         * @return XML representing the <measure> element.
+         * Builds the \<metronome\> element.
+         * @param beatUnit: String (The type of the beat unit, e.g., "quarter")
+         * @param perMinute: String (How many beat units to play in a minute, e.g., "120")
+         * @return XML representing the \<metronome\> element.
          */
-        protected static function buildMeasure(data:Object):XML {
-            var measure:XML = <measure number={data.number}/>;
+        protected static function buildMetronome(beatUnit:String, perMinute:String):XML {
+            var metronome:XML = <metronome/>;
+            metronome.appendChild(buildBeatUnit(beatUnit));
+            metronome.appendChild(buildPerMinute(perMinute));
+            return metronome;
+        }
 
-            if (data.attributes) {
-                measure.appendChild(buildAttributes(data.attributes));
+        /**
+         * Builds the \<direction-type\> element.
+         * @param payload: XML (The payload of the direction-type element, e.g., a <metronome> or `words` element).
+         * @return XML representing the \<direction-type\> element.
+         */
+        protected static function buildDirectionType(payload:XML):XML {
+            var directionType:XML = <direction-type/>;
+            if (!payload) {
+                return null;
             }
 
-            for each (var noteData:Object in data.notes) {
+            directionType.appendChild(payload);
+            return directionType;
+        }
+
+        /**
+         * Builds the \<direction\> element.
+         * @param placement: String (Optional, "above" or "below", default "above")
+         * @param words: Vector of XML (Optional. Each XML element represents a <words> element packed in a \<direction-type\> element)
+         * @param metronome: XML (Optional. A \<metronome\> element packed in a \<direction-type\> element).
+         *
+         * Notes:
+         * - only \<metronome\> or \<words\> XML \<direction-type\> elements are supported for the time being
+         * - you must provide at least one of `metronome` or `words` to create a \<direction\> element.
+         *
+         * @return XML representing the \<direction\> element. Can be null if no `metronome` or `words` are provided.
+         */
+        protected static function buildDirection(placement:String, words:Vector.<XML>, metronome:XML):XML {
+            if (!metronome && !words) {
+                return null;
+            }
+
+            var direction:XML = <direction/>;
+            const $placement:String = Strings.trim(placement || '');
+            if ($placement && ["above", "below"].includes($placement)) {
+                direction.@placement = placement;
+            }
+            else {
+                direction.@placement = "above";
+            }
+
+            if (metronome) {
+                direction.appendChild(buildDirectionType(metronome));
+                direction.appendChild(<sound tempo={metronome.perMinute}/>);
+            }
+            if (words && words.length > 0) {
+                for each (var wordsEl:XML in words) {
+                    direction.appendChild(buildDirectionType(wordsEl));
+                }
+            }
+
+            return direction;
+        }
+
+        /**
+         * Builds the \<measure\> element.
+         * @param number: String (The measure number)
+         * @param notes: Vector of Note objects (Each object represents a note)
+         * @param attributes: Attributes object (Optional, the attributes for the measure)
+         * @param direction: Direction object (Optional, the direction (additional indications, such as tempo, for the measure)
+         * @return XML representing the \<measure\> element. Can be null if number or notes are empty.
+         */
+        protected static function buildMeasure(
+                number:String, notes:Vector.<Note>,
+                attributes:Attributes = null, direction:Direction = null
+            ):XML {
+
+            if (!number || !notes || notes.length == 0) {
+                return null;
+            }
+
+            var measure:XML = <measure number={number}/>;
+
+            if (direction) {
+                var $words:Vector.<XML> = null;
+                if (direction.textLines) {
+                    $words = new Vector.<XML>();
+                    for each (var textLine:String in direction.textLines) {
+                        $words.push(buildWords(textLine));
+                    }
+                }
+
+                var $metronome:XML = null;
+                if (direction.beatUnit && direction.perMinute) {
+                    $metronome = buildMetronome(direction.beatUnit, direction.perMinute);
+                }
+
+                measure.appendChild(buildDirection(direction.placement, $words, $metronome));
+            }
+
+            if (attributes) {
+                measure.appendChild(buildAttributes(attributes));
+            }
+
+            for each (var noteData:Note in notes) {
                 measure.appendChild(buildNote(noteData));
             }
 
@@ -710,17 +1016,21 @@ package eu.claudius.iacob.music.builders {
         // -----------------------------
 
         /**
-         * Builds the <part> element, which contains all measures for an instrument.
-         * @param data An object containing:
-         *   - id: String (The part identifier)
-         *   - measures: Array of Objects (Each object represents a measure)
-         * @return XML representing the <part> element.
+         * Builds the \<part\> element, which contains all measures for an instrument.
+         * @param pcData A Part instance.
+         * 
+         * @return XML representing the \<part\> element.
          */
-        protected static function buildPart(data:Object):XML {
-            var part:XML = <part id={data.id}/>;
+        protected static function buildPart(pcData:PartContent):XML {
+            var part:XML = <part id={pcData.partId}/>;
 
-            for each (var measureData:Object in data.measures) {
-                part.appendChild(buildMeasure(measureData));
+            for (var i:int = 0; i < pcData.partMeasures.length; i++) {
+                var measureData:Measure = pcData.partMeasures[i];
+                part.appendChild(buildMeasure(
+                            (i + 1).toString(),
+                            measureData.notes, measureData.attributes,
+                            measureData.direction
+                        ));
             }
 
             return part;
@@ -728,18 +1038,17 @@ package eu.claudius.iacob.music.builders {
 
         /**
          * Builds the entire musical content (all parts).
-         * @param data An object containing:
-         *   - parts: Array of Objects (Each object represents a part)
-         * @return XML representing all <part> elements.
+         * @param parts A Vector of PartContent instances.
+         * @return XML representing all \<part\> elements.
          */
-        public static function buildActualMusic(data:Object):XMLList {
-            var parts:XMLList = new XMLList();
+        public static function buildActualMusic(parts:Vector.<PartContent>):XMLList {
+            var $parts:XMLList = new XMLList();
 
-            for each (var partData:Object in data.parts) {
-                parts += buildPart(partData);
+            for each (var partData:PartContent in parts) {
+                $parts += buildPart(partData);
             }
 
-            return parts;
+            return $parts;
         }
 
         // =====================
@@ -748,28 +1057,20 @@ package eu.claudius.iacob.music.builders {
 
         /**
          * Builds the full MusicXML document as a <score-partwise> element.
-         * @param data An object containing:
-         *   - extraMusical: Object (Metadata such as title, composer, encoding info)
-         *   - presentation: Object (Page layout, scaling, margins)
-         *   - musicalContext: Object (Part groups and score parts)
-         *   - actualMusic: Object (The actual musical content)
+         * @param scoreData A Score instance.
          * @return XML representing the entire MusicXML document.
          */
-        public static function buildScore(data:Object):XML {
+        public static function buildScore(scoreData:Score):XML {
             var score:XML = <score-partwise/>;
 
-            // Attach extra-musical information
-            score.appendChild(buildExtraMusicalContent(data.extraMusical));
+            addExtraMusicalContent(score, scoreData.title, scoreData.identification);
 
-            // Attach presentation defaults
-            score.appendChild(buildPresentationDefaults(data.width, data.height,
-                        data.margins, data.scaling));
+            score.appendChild(buildPresentationDefaults(scoreData.width, scoreData.height,
+                        scoreData.margins, scoreData.scaling));
 
-            // Attach musical context (part-list)
-            score.appendChild(buildMusicalContext(data.musicalContext));
+            score.appendChild(buildMusicalContext(scoreData.partsInfo, scoreData.groupsInfo));
 
-            // Attach actual music (parts and measures)
-            score.appendChild(buildActualMusic(data.actualMusic));
+            score.appendChild(buildActualMusic(scoreData.partsContent));
 
             return score;
         }

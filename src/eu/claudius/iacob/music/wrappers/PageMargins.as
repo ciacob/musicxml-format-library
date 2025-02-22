@@ -1,7 +1,7 @@
 package eu.claudius.iacob.music.wrappers {
 
     /**
-     * PageMargins wrapper class.
+     * Data wrapper for the \<page-margins\> MusicXML element.
      */
     public class PageMargins {
         public function PageMargins(left:String, right:String, top:String, bottom:String,

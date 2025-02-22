@@ -1,7 +1,7 @@
 package eu.claudius.iacob.music.wrappers {
 
     /**
-     * The Identification class is a wrapper for the MusicXML Identification element.
+     * Data wrapper for the \<identification\> MusicXML element.
      */
     public class Identification {
         public function Identification(

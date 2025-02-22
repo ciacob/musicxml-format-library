@@ -11,7 +11,8 @@
       "EditorFontSize"
     ],
     "library-path": [
-      "d:\\_DEV_\\github\\actionscript\\utils-library\\bin"
+      "d:\\_DEV_\\github\\actionscript\\utils-library\\bin",
+      "d:\\_DEV_\\github\\actionscript\\fraction-library\\bin"
     ],
     "output": "bin/musicxml-format-library.swc",
     "include-sources": [
