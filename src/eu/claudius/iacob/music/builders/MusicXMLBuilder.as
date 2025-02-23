@@ -39,7 +39,7 @@ package eu.claudius.iacob.music.builders {
          */
         protected static function buildWorkTitle(title:String):XML {
             const $title:String = Strings.trim(title || '');
-            return $title ? <work-title>{$title}</work-title>                                          : null;
+            return $title ? <work-title>{$title}</work-title>                                                     : null;
         }
 
         /**
@@ -51,7 +51,7 @@ package eu.claudius.iacob.music.builders {
         protected static function buildCreator(type:String, name:String):XML {
             const $type:String = Strings.trim(type || '');
             const $name:String = Strings.trim(name || '');
-            return ($type && $name) ? <creator type={$type}>{$name}</creator>                                          : null;
+            return ($type && $name) ? <creator type={$type}>{$name}</creator>                                                     : null;
         }
 
         /**
@@ -61,7 +61,7 @@ package eu.claudius.iacob.music.builders {
          */
         protected static function buildEncoder(encoder:String):XML {
             const $encoder:String = Strings.trim(encoder || '');
-            return $encoder ? <encoder>{$encoder}</encoder>                                          : null;
+            return $encoder ? <encoder>{$encoder}</encoder>                                                     : null;
         }
 
         /**
@@ -71,7 +71,7 @@ package eu.claudius.iacob.music.builders {
          */
         protected static function buildEncodingDate(encodingDate:String):XML {
             const $date:String = Strings.trim(encodingDate || '');
-            return $date ? <encoding-date>{$date}</encoding-date>                                          : null;
+            return $date ? <encoding-date>{$date}</encoding-date>                                                     : null;
         }
 
         /**
@@ -84,7 +84,7 @@ package eu.claudius.iacob.music.builders {
             const $name:String = Strings.trim(miscName || '');
             const $value:String = Strings.trim(miscVal || '');
             return ($name && $value) ?
-                <miscellaneous-field name={$name}>{$value}</miscellaneous-field>                                          : null;
+                <miscellaneous-field name={$name}>{$value}</miscellaneous-field>                                                     : null;
         }
 
         // --------------------------------
@@ -94,7 +94,7 @@ package eu.claudius.iacob.music.builders {
         /**
          * Builds the \<work\> element containing \<work-title\>.
          * @param workTitle String (The title of the score)
-         * @return XML representing the \<work\> element. Can be empty if the title is empty.
+         * @return XML representing the \<work\> element. Can be empty for missing/invalid input.
          */
         protected static function buildWork(workTitle:String):XML {
             var work:XML = <work/>;
@@ -106,8 +106,7 @@ package eu.claudius.iacob.music.builders {
          * Builds the \<encoding\> element containing \<encoder\> and \<encoding-date\>.
          * @param encoder: String (The name/version of the encoding software).
          * @param encodingDate: String (The encoding date).
-         * @return  XML representing the \<encoding\> element. Can be empty if both
-         *          encoder and date are empty.
+         * @return  XML representing the \<encoding\> element. Can be empty for missing/invalid input.
          */
         protected static function buildEncoding(encoder:String, encodingDate:String):XML {
             var encoding:XML = <encoding/>;
@@ -119,7 +118,7 @@ package eu.claudius.iacob.music.builders {
         /**
          * Builds the \<miscellaneous\> element containing multiple \<miscellaneous-field\> elements.
          * @param miscElements: Vector of `Misc` instances.
-         * @return XML representing the \<miscellaneous\> element. Can be empty if no fields are provided.
+         * @return XML representing the \<miscellaneous\> element. Can be empty for missing/invalid input.
          */
         protected static function buildMiscellaneous(miscElements:Vector.<Misc>):XML {
             var miscellaneous:XML = <miscellaneous/>;
@@ -196,19 +195,22 @@ package eu.claudius.iacob.music.builders {
          * Builds the \<scaling\> element.
          * @param millimeters: String (Real-world size of a "tenths" unit, e.g., 6.7744)
          * @param tenths: String (Relative unit size in MusicXML, e.g., 40)
-         * @return  XML representing the <scaling> element. Can be empty if both values
-         *          are empty.
+         * @return  XML representing the <scaling> element. Can be empty for missing/invalid input.
          */
         protected static function buildScaling(millimeters:String, tenths:String):XML {
             const $millimeters:String = Strings.trim(millimeters || '');
             const $tenths:String = Strings.trim(tenths || '');
+
+            if (!$millimeters || !$tenths ||
+                    !Strings.isNumeric($millimeters) || !Strings.isNumeric($tenths)) {
+                trace("Invalid scaling values: [" + $millimeters + ", " + $tenths + "]");
+                return null;
+            }
+
             const scaling:XML = <scaling/>;
-            if ($millimeters) {
-                scaling.appendChild(<millimeters>{$millimeters}</millimeters>);
-            }
-            if ($tenths) {
-                scaling.appendChild(<tenths>{$tenths}</tenths>);
-            }
+            scaling.appendChild(<millimeters>{$millimeters}</millimeters>);
+            scaling.appendChild(<tenths>{$tenths}</tenths>);
+
             return scaling;
         }
 
@@ -217,16 +219,21 @@ package eu.claudius.iacob.music.builders {
          * @param width:String (Width of the page in millimeters, e.g., 1239.96)
          * @param height: Number (Height of the page in millimeters, e.g., 1753.66)
          * @return  XML representing the \<page-layout\> element (without margins).
-         *          Can be empty if both width and height are empty.
+         *          Can be empty for missing/invalid input.
          */
         protected static function buildPageLayout(width:String, height:String):XML {
-            const pageLayout:XML = <page-layout />;
             const $width:String = Strings.trim(width || '');
             const $height:String = Strings.trim(height || '');
-            if ($width && $height) {
-                pageLayout.appendChild(<page-width>{$width}</page-width>);
-                pageLayout.appendChild(<page-height>{$height}</page-height>);
+            if (!$width || !$height ||
+                    !Strings.isNumeric($width) || !Strings.isNumeric($height)) {
+                trace("Invalid page layout values: [" + $width + ", " + $height + "]");
+                return null;
             }
+
+            const pageLayout:XML = <page-layout />;
+            pageLayout.appendChild(<page-width>{$width}</page-width>);
+            pageLayout.appendChild(<page-height>{$height}</page-height>);
+
             return pageLayout;
         }
 
@@ -237,8 +244,7 @@ package eu.claudius.iacob.music.builders {
          * @param top: String (Margin on the top, e.g., 206.66)
          * @param bottom: String (Margin at the bottom, e.g., 59.0458)
          * @param type: String (Optional: "both", "odd", "even" to indicate page type)
-         * @return  XML representing the \<page-margins\> element. Can be empty if
-         *          any of the margins are empty.
+         * @return  XML representing the \<page-margins\> element. Can be empty for missing/invalid input.
          */
         protected static function buildPageMargins(
                 left:String,
@@ -247,21 +253,26 @@ package eu.claudius.iacob.music.builders {
                 bottom:String,
                 type:String = null
             ):XML {
-            const pageMargins:XML = <page-margins/>;
-
             const $left:String = Strings.trim(left || '');
             const $right:String = Strings.trim(right || '');
             const $top:String = Strings.trim(top || '');
             const $bottom:String = Strings.trim(bottom || '');
-            if ($left && $right && $top && $bottom) {
-                pageMargins.appendChild(<left-margin>{$left}</left-margin>);
-                pageMargins.appendChild(<right-margin>{$right}</right-margin>);
-                pageMargins.appendChild(<top-margin>{$top}</top-margin>);
-                pageMargins.appendChild(<bottom-margin>{$bottom}</bottom-margin>);
-                if (type && (type == "both" || type == "odd" || type == "even")) {
-                    pageMargins.@type = type;
-                }
+            if (!$left || !$right || !$top || !$bottom ||
+                    !Strings.isNumeric($left) || !Strings.isNumeric($right) ||
+                    !Strings.isNumeric($top) || !Strings.isNumeric($bottom)) {
+                trace("Invalid page margins: [" + $left + ", " + $right + ", " + $top + ", " + $bottom + "]");
+                return null;
             }
+
+            const pageMargins:XML = <page-margins/>;
+            pageMargins.appendChild(<left-margin>{$left}</left-margin>);
+            pageMargins.appendChild(<right-margin>{$right}</right-margin>);
+            pageMargins.appendChild(<top-margin>{$top}</top-margin>);
+            pageMargins.appendChild(<bottom-margin>{$bottom}</bottom-margin>);
+            if (type && (type == "both" || type == "odd" || type == "even")) {
+                pageMargins.@type = type;
+            }
+
             return pageMargins;
         }
 
@@ -334,9 +345,11 @@ package eu.claudius.iacob.music.builders {
             const $id:String = Strings.trim(id || '');
             const $type:String = Strings.trim(type || '');
             if (!$id || !$type) {
+                trace ("Invalid part group: [" + $id + ", " + $type + "]");
                 return null;
             }
             if ($type != "start" && $type != "stop") {
+                trace ("Invalid part group type: [" + $type + "]");
                 return null;
             }
 
@@ -362,8 +375,7 @@ package eu.claudius.iacob.music.builders {
          * @param abbreviation: String (The short instrument name)
          * @param midiChannel: String (Optional, the MIDI playback channel)
          * @param midiPatch: String (Optional, the MIDI instrument patch number)
-         * @return XML representing a <score-part> element. Can be empty if any of the
-         *         required fields are empty.
+         * @return XML representing a <score-part> element. Can be empty for missing/invalid input.
          */
         protected static function buildScorePart(
                 id:String, name:String, abbreviation:String,
@@ -373,6 +385,7 @@ package eu.claudius.iacob.music.builders {
             const $name:String = Strings.trim(name || '');
             const $abbreviation:String = Strings.trim(abbreviation || '');
             if (!$id || !$name || !$abbreviation) {
+                trace ("Invalid score part: [" + $id + ", " + $name + ", " + $abbreviation + "]");
                 return null;
             }
             var scorePart:XML = <score-part id={$id}/>;
@@ -383,7 +396,8 @@ package eu.claudius.iacob.music.builders {
 
             const $midiChannel:String = Strings.trim(midiChannel || '');
             const $midiPatch:String = Strings.trim(midiPatch || '');
-            if ($midiChannel && $midiPatch) {
+            if ($midiChannel && $midiPatch &&
+                    Strings.isNumeric($midiChannel) && Strings.isNumeric($midiPatch)) {
                 var midiInstrument:XML = <midi-instrument id={$id + "-inst"}/>;
                 midiInstrument.appendChild(<midi-channel>{$midiChannel}</midi-channel>);
                 midiInstrument.appendChild(<midi-program>{$midiPatch}</midi-program>);
@@ -399,7 +413,7 @@ package eu.claudius.iacob.music.builders {
         /**
          * Builds the part groups for the score.
          * @param groups: Vector of `Group` instances.
-         * @return XMLList representing the \<part-group\> elements. Can be empty if no groups are provided.
+         * @return XMLList representing the \<part-group\> elements. Can be empty for missing/invalid input.
          */
         protected static function buildPartGroups(groups:Vector.<Group>):XMLList {
             var partGroups:XMLList = new XMLList();
@@ -415,7 +429,7 @@ package eu.claudius.iacob.music.builders {
         /**
          * Builds the score parts for the score.
          * @param parts: Vector of `ScorePart` instances.
-         * @return XMLList representing the \<score-part\> elements. Can be empty if no parts are provided.
+         * @return XMLList representing the \<score-part\> elements. Can be empty for missing/invalid input.
          */
         protected static function buildScoreParts(parts:Vector.<PartInfo>):XMLList {
             var scoreParts:XMLList = new XMLList();
@@ -518,27 +532,30 @@ package eu.claudius.iacob.music.builders {
          * @param step: String (The note name, e.g., "A", "B", "C")
          * @param octave: String (The octave number)
          * @param alteration: String (Optional, e.g., "1", "-1", "0", etc.)
-         * @return XML representing the \<pitch\> element. Can be null if step or octave are empty.
+         * @return XML representing the \<pitch\> element. Can be empty for missing/invalid input.
          */
         protected static function buildPitch(step:String, octave:String, alteration:String = null):XML {
             const pitch:XML = <pitch/>;
 
             const $step:String = Strings.trim(step || '').toUpperCase();
             const $octave:String = Strings.trim(octave || '');
-            if (!$step || !$octave) {
+            if (!$step || !$octave || !Strings.isNumeric($octave)) {
+                trace ("Invalid pitch: [" + $step + ", " + $octave + "]");
                 return null;
             }
             if (!["C", "D", "E", "F", "G", "A", "B"].includes($step)) {
+                trace ("Invalid pitch step: [" + $step + "]");
                 return null;
             }
             if (!['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'].includes($octave)) {
+                trace ("Invalid pitch octave: [" + $octave + "]");
                 return null;
             }
             pitch.appendChild(<step>{$step}</step>);
             pitch.appendChild(<octave>{$octave}</octave>);
 
             const $alter:String = Strings.trim(alteration || '');
-            if ($alter) {
+            if ($alter && Strings.isNumeric($alter)) {
                 pitch.appendChild(<alter>{$alter}</alter>);
             }
             return pitch;
@@ -547,11 +564,12 @@ package eu.claudius.iacob.music.builders {
         /**
          * Builds the \<duration\> element.
          * @param duration: String (The note duration value, as a number of divisions)
-         * @return XML representing the \<duration\> element. Can be null if duration is empty.
+         * @return XML representing the \<duration\> element. Can be empty for missing/invalid input.
          */
         protected static function buildDuration(duration:String):XML {
             const $duration:String = Strings.trim(duration || '');
-            if (!$duration) {
+            if (!$duration || !Strings.isNumeric($duration)) {
+                trace ("Invalid duration: [" + $duration + "]");
                 return null;
             }
 
@@ -561,11 +579,12 @@ package eu.claudius.iacob.music.builders {
         /**
          * Builds the \<type\> element.
          * @param type: String ("whole", "half", "quarter", "eighth", etc.)
-         * @return XML representing the \<type\> element. Can be null if type is empty or invalid.
+         * @return XML representing the \<type\> element. Can be empty for missing/invalid input.
          */
         protected static function buildType(type:String):XML {
             const $type:String = Strings.trim(type || '');
             if (!$type) {
+                trace ("Invalid note type: [" + $type + "]");
                 return null;
             }
             const noteTypes:Array = [
@@ -573,6 +592,7 @@ package eu.claudius.iacob.music.builders {
                     "eighth", "quarter", "half", "whole", "breve", "long", "maxima"
                 ];
             if (!noteTypes.includes($type)) {
+                trace ("Invalid note type: [" + $type + "]");
                 return null;
             }
 
@@ -582,15 +602,17 @@ package eu.claudius.iacob.music.builders {
         /**
          * Builds the \<tie\> element.
          * @param tieType: String (e.g., "start" or "stop")
-         * @return XML representing the \<tie\> element. Can be null if tieType is empty or invalid.
+         * @return XML representing the \<tie\> element. Can be empty for missing/invalid input.
          */
         protected static function buildTie(tieType:String):XML {
             const $tieType:String = Strings.trim(tieType || '');
             if (!$tieType) {
+                trace ("Invalid tie type: [" + $tieType + "]");
                 return null;
             }
             const tieTypes:Array = ["start", "stop", "continue", "let-ring"];
             if (!tieTypes.includes($tieType)) {
+                trace ("Invalid tie type: [" + $tieType + "]");
                 return null;
             }
             return <tie type={tieType}/>;
@@ -599,11 +621,12 @@ package eu.claudius.iacob.music.builders {
         /**
          * Builds the \<accidental\> element.
          * @param accidental: String (e.g., "sharp", "flat", "natural", etc.)
-         * @return XML representing the \<accidental\> element. Can be null if accidental is empty or invalid.
+         * @return XML representing the \<accidental\> element. Can be empty for missing/invalid input.
          */
         protected static function buildAccidental(accidental:String):XML {
             const $accidental:String = Strings.trim(accidental || '');
             if (!$accidental) {
+                trace ("Invalid accidental: [" + $accidental + "]");
                 return null;
             }
             const accidentalTypes:Array = [
@@ -611,6 +634,7 @@ package eu.claudius.iacob.music.builders {
                     "double-flat", "natural-sharp", "natural-flat"
                 ];
             if (!accidentalTypes.includes($accidental)) {
+                trace ("Invalid accidental: [" + $accidental + "]");
                 return null;
             }
 
@@ -620,11 +644,12 @@ package eu.claudius.iacob.music.builders {
         /**
          * Builds the \<divisions\> element.
          * @param divisions: String (Rhythmic granularity of the quarter note)
-         * @return XML representing the \<divisions\> element. Can be null if divisions is empty.
+         * @return XML representing the \<divisions\> element. Can be empty for missing/invalid input.
          */
         protected static function buildDivisions(divisions:String):XML {
             const $divisions:String = Strings.trim(divisions || '');
-            if (!$divisions) {
+            if (!$divisions || !Strings.isNumeric($divisions)) {
+                trace ("Invalid divisions: [" + $divisions + "]");
                 return null;
             }
 
@@ -634,11 +659,12 @@ package eu.claudius.iacob.music.builders {
         /**
          * Builds the \<fifths\> element.
          * @param fifths: String (Number of fifths in the key signature)
-         * @return XML representing the \<fifths\> element. Can be null if fifths is empty.
+         * @return XML representing the \<fifths\> element. Can be empty for missing/invalid input.
          */
         protected static function buildFifths(fifths:String):XML {
             const $fifths:String = Strings.trim(fifths || '');
-            if (!$fifths) {
+            if (!$fifths || !Strings.isNumeric($fifths)) {
+                trace ("Invalid fifths: [" + $fifths + "]");
                 return null;
             }
 
@@ -648,15 +674,17 @@ package eu.claudius.iacob.music.builders {
         /**
          * Builds the \<mode\> element.
          * @param mode: String (The mode of the key signature, e.g., "major" or "minor")
-         * @return XML representing the \<mode\> element. Can be null if mode is empty.
+         * @return XML representing the \<mode\> element. Can be empty for missing/invalid input.
          */
         protected static function buildMode(mode:String):XML {
             const $mode:String = Strings.trim(mode || '');
             if (!$mode) {
+                trace ("Invalid mode: [" + $mode + "]");
                 return null;
             }
             const modes:Array = ["major", "minor"];
             if (!modes.includes($mode)) {
+                trace ("Invalid mode: [" + $mode + "]");
                 return null;
             }
 
@@ -666,11 +694,12 @@ package eu.claudius.iacob.music.builders {
         /**
          * Builds the \<beats\> element.
          * @param beats: String (The number of beats in a measure)
-         * @return XML representing the \<beats\> element. Can be null if beats is empty.
+         * @return XML representing the \<beats\> element. Can be empty for missing/invalid input.
          */
         protected static function buildBeats(beats:String):XML {
             const $beats:String = Strings.trim(beats || '');
-            if (!$beats) {
+            if (!$beats || !Strings.isNumeric($beats)) {
+                trace ("Invalid beats: [" + $beats + "]");
                 return null;
             }
 
@@ -679,12 +708,13 @@ package eu.claudius.iacob.music.builders {
 
         /**
          * Builds the \<beat-type\> element.
-         * @param beatType: String (The note value that receives the beat, e.g., "4")
-         * @return XML representing the \<beat-type\> element. Can be null if beatType is empty.
+         * @param beatType: String (The note value that receives the beat, e.g., "4" for a quarter note)
+         * @return XML representing the \<beat-type\> element. Can be empty for missing/invalid input.
          */
         protected static function buildBeatType(beatType:String):XML {
             const $beatType:String = Strings.trim(beatType || '');
-            if (!$beatType) {
+            if (!$beatType || !Strings.isNumeric($beatType)) {
+                trace ("Invalid beat type: [" + $beatType + "]");
                 return null;
             }
 
@@ -694,15 +724,17 @@ package eu.claudius.iacob.music.builders {
         /**
          * Builds the \<sign\> element.
          * @param sign: String (The clef sign, e.g., "G", "F", "C", "percussion", "none")
-         * @return The XML representing the <sign> element. Can be null if sign is empty or invalid.
+         * @return The XML representing the <sign> element. Can be empty for missing/invalid input.
          */
         protected static function buildSign(sign:String):XML {
             const $sign:String = Strings.trim(sign || '');
             if (!$sign) {
+                trace ("Invalid clef sign: [" + $sign + "]");
                 return null;
             }
             const clefSigns:Array = ["G", "F", "C", "percussion", "none"];
             if (!clefSigns.includes($sign)) {
+                trace ("Invalid clef sign: [" + $sign + "]");
                 return null;
             }
 
@@ -712,15 +744,17 @@ package eu.claudius.iacob.music.builders {
         /**
          * Builds the \<line\> element.
          * @param line: String (The clef line number, e.g., "1", "2", "3", etc.)
-         * @return XML representing the \<line\> element. Can be null if line is empty or invalid.
+         * @return XML representing the \<line\> element. Can be empty for missing/invalid input.
          */
         protected static function buildLine(line:String):XML {
             const $line:String = Strings.trim(line || '');
-            if (!$line) {
+            if (!$line || !Strings.isNumeric($line)) {
+                trace ("Invalid clef line: [" + $line + "]");
                 return null;
             }
             const clefLines:Array = ["1", "2", "3", "4", "5"];
             if (!clefLines.includes($line)) {
+                trace ("Invalid clef line: [" + $line + "]");
                 return null;
             }
 
@@ -738,11 +772,12 @@ package eu.claudius.iacob.music.builders {
         /**
          * Builds the \<sound\> element.
          * @param tempo: String (The tempo of the note, e.g., "120")
-         * @return XML representing the \<sound\> element. Can be null if tempo is empty.
+         * @return XML representing the \<sound\> element. Can be empty for missing/invalid input.
          */
         protected static function buildSound(tempo:String):XML {
             const $tempo:String = Strings.trim(tempo || '');
-            if (!$tempo) {
+            if (!$tempo || !Strings.isNumeric($tempo)) {
+                trace ("Invalid tempo: [" + $tempo + "]");
                 return null;
             }
             return <sound tempo={$tempo}/>;
@@ -751,15 +786,17 @@ package eu.claudius.iacob.music.builders {
         /**
          * Builds the \<beat-unit\> element.
          * @param beatUnit: String (The type of the beat unit, e.g., "quarter")
-         * @return XML representing the \<beat-unit\> element. Can be null if `beatUnit` is empty or invalid.
+         * @return XML representing the \<beat-unit\> element. Can be empty for missing/invalid input.
          */
         protected static function buildBeatUnit(beatUnit:String):XML {
             const $beatUnit:String = Strings.trim(beatUnit || '');
             if (!$beatUnit) {
+                trace ("Invalid beat unit: [" + $beatUnit + "]");
                 return null;
             }
             const beatUnits:Array = ["whole", "half", "quarter", "eighth", "16th", "32nd", "64th", "128th"];
             if (!beatUnits.includes($beatUnit)) {
+                trace ("Invalid beat unit: [" + $beatUnit + "]");
                 return null;
             }
 
@@ -769,11 +806,12 @@ package eu.claudius.iacob.music.builders {
         /**
          * Builds the \<per-minute\> element.
          * @param perMinute String (How many beat units to play in a minute, e.g., "120")
-         * @return XML representing the \<per-minute\> element. Can be null if `perMinute` is empty.
+         * @return XML representing the \<per-minute\> element. Can be empty for missing/invalid input.
          */
         protected static function buildPerMinute(perMinute:String):XML {
             const $perMinute:String = Strings.trim(perMinute || '');
-            if (!$perMinute) {
+            if (!$perMinute || !Strings.isNumeric($perMinute)) {
+                trace ("Invalid per-minute: [" + $perMinute + "]");
                 return null;
             }
             return <per-minute>{$perMinute}</per-minute>;
@@ -782,11 +820,12 @@ package eu.claudius.iacob.music.builders {
         /**
          * Builds the \<words\> element.
          * @param words: String (Text to display as part of a <direction-type> element).
-         * @return XML representing the \<words\> element. Can be null if `words` is empty.
+         * @return XML representing the \<words\> element. Can be empty for missing/invalid input.
          */
         protected static function buildWords(words:String):XML {
             const $words:String = Strings.trim(words || '');
             if (!$words) {
+                trace ("Invalid words: [" + $words + "]");
                 return null;
             }
             return <words>{$words}</words>;
@@ -800,7 +839,7 @@ package eu.claudius.iacob.music.builders {
          * Builds the \<key\> element.
          * @param fifths: String (Number of fifths in the key signature)
          * @param mode: String (The mode of the key signature, e.g., "major" or "minor")
-         * @return XML representing the \<key\> element. Can be empty if fifths or mode are empty.
+         * @return XML representing the \<key\> element. Can be empty for missing/invalid input.
          */
         protected static function buildKey(fifths:String, mode:String):XML {
             var key:XML = <key/>;
@@ -815,7 +854,7 @@ package eu.claudius.iacob.music.builders {
          * Builds the \<time\> element.
          * @param beats: String (The number of beats in a measure)
          * @param beatType: String (The note value that receives the beat, e.g., "4")
-         * @return XML representing the \<time\> element. Can be empty if beats or beatType are empty.
+         * @return XML representing the \<time\> element. Can be empty for missing/invalid input.
          */
         protected static function buildTime(beats:String, beatType:String):XML {
             var time:XML = <time/>;
@@ -830,7 +869,7 @@ package eu.claudius.iacob.music.builders {
          * Builds the \<clef\> element.
          * @param sign: String (The clef sign, e.g., "G", "F", "C", "percussion", "none")
          * @param line: String (The clef line number, e.g., "1", "2", "3", etc.)
-         * @return XML representing the \<clef\> element. Can be empty if sign or line are empty.
+         * @return XML representing the \<clef\> element. Can be empty for missing/invalid input.
          */
         protected static function buildClef(sign:String, line:String):XML {
             var clef:XML = <clef/>;
@@ -845,10 +884,11 @@ package eu.claudius.iacob.music.builders {
          * Builds the \<note\> element.
          * @param noteData - a Note instance.
          *
-         * @return XML representing the \<note\> element. Can be null or empty if missing or invalid input is given.
+         * @return XML representing the \<note\> element. Can be empty for missing/invalid input.
          */
         protected static function buildNote(noteData:Note):XML {
             if (!noteData) {
+                trace ("Invalid note data: [" + noteData + "]");
                 return null;
             }
 
@@ -885,7 +925,7 @@ package eu.claudius.iacob.music.builders {
         /**
          * Builds the \<attributes\> element.
          * @param aData An Attributes instance.
-         * 
+         *
          * @return XML representing the \<attributes\> element.
          */
         protected static function buildAttributes(aData:Attributes):XML {
@@ -918,6 +958,7 @@ package eu.claudius.iacob.music.builders {
         protected static function buildDirectionType(payload:XML):XML {
             var directionType:XML = <direction-type/>;
             if (!payload) {
+                trace ("Invalid direction type payload: [" + payload + "]");
                 return null;
             }
 
@@ -935,10 +976,11 @@ package eu.claudius.iacob.music.builders {
          * - only \<metronome\> or \<words\> XML \<direction-type\> elements are supported for the time being
          * - you must provide at least one of `metronome` or `words` to create a \<direction\> element.
          *
-         * @return XML representing the \<direction\> element. Can be null if no `metronome` or `words` are provided.
+         * @return XML representing the \<direction\> element. Can be empty for missing/invalid input.
          */
         protected static function buildDirection(placement:String, words:Vector.<XML>, metronome:XML):XML {
             if (!metronome && !words) {
+                trace ("Invalid direction: [" + placement + ", " + words + ", " + metronome + "]");
                 return null;
             }
 
@@ -970,7 +1012,7 @@ package eu.claudius.iacob.music.builders {
          * @param notes: Vector of Note objects (Each object represents a note)
          * @param attributes: Attributes object (Optional, the attributes for the measure)
          * @param direction: Direction object (Optional, the direction (additional indications, such as tempo, for the measure)
-         * @return XML representing the \<measure\> element. Can be null if number or notes are empty.
+         * @return XML representing the \<measure\> element. Can be empty for missing/invalid input.
          */
         protected static function buildMeasure(
                 number:String, notes:Vector.<Note>,
@@ -978,6 +1020,7 @@ package eu.claudius.iacob.music.builders {
             ):XML {
 
             if (!number || !notes || notes.length == 0) {
+                trace ("Invalid measure: [" + number + ", " + notes + "]");
                 return null;
             }
 
@@ -1018,7 +1061,7 @@ package eu.claudius.iacob.music.builders {
         /**
          * Builds the \<part\> element, which contains all measures for an instrument.
          * @param pcData A Part instance.
-         * 
+         *
          * @return XML representing the \<part\> element.
          */
         protected static function buildPart(pcData:PartContent):XML {
