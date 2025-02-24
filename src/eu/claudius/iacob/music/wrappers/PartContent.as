@@ -6,7 +6,9 @@ package eu.claudius.iacob.music.wrappers
      * Data wrapper for the \<part\> MusicXML element.
      */
     public class PartContent {
-        public function PartContent(partId : String,partMeasures : Vector.<Measure>) {
+
+        
+        public function PartContent(partId : String, partMeasures : Vector.<Measure>) {
             this._partId = partId;
             this._partMeasures = partMeasures;
         }

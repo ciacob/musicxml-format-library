@@ -1,13 +1,24 @@
-/**
- * Data wrapper for the \<pitch\> MusicXML element.
- */
 package eu.claudius.iacob.music.wrappers
 {
+    /**
+     * Data wrapper for the \<pitch\> MusicXML element.
+     */
     public class Pitch {
         private var _step:String;
         private var _octave:String;
         private var _alteration:String;
 
+        /**
+         * Data wrapper for the \<pitch\> MusicXML element.
+         * @param   step
+         *          The step of the pitch, e.g. "C".
+         * 
+         * @param   octave
+         *          The octave of the pitch, e.g. "4".
+         * 
+         * @param   alteration
+         *          The alteration of the pitch, in number of semitones, e.g. "-1" for a flat.
+         */
         public function Pitch (step:String, octave:String, alteration:String = null) {
             _step = step;
             _octave = octave;

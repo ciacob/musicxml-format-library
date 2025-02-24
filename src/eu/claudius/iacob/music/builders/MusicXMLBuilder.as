@@ -39,7 +39,7 @@ package eu.claudius.iacob.music.builders {
          */
         protected static function buildWorkTitle(title:String):XML {
             const $title:String = Strings.trim(title || '');
-            return $title ? <work-title>{$title}</work-title>                                                     : null;
+            return $title ? <work-title>{$title}</work-title>                                                      : null;
         }
 
         /**
@@ -51,7 +51,7 @@ package eu.claudius.iacob.music.builders {
         protected static function buildCreator(type:String, name:String):XML {
             const $type:String = Strings.trim(type || '');
             const $name:String = Strings.trim(name || '');
-            return ($type && $name) ? <creator type={$type}>{$name}</creator>                                                     : null;
+            return ($type && $name) ? <creator type={$type}>{$name}</creator>                                                      : null;
         }
 
         /**
@@ -61,7 +61,7 @@ package eu.claudius.iacob.music.builders {
          */
         protected static function buildEncoder(encoder:String):XML {
             const $encoder:String = Strings.trim(encoder || '');
-            return $encoder ? <encoder>{$encoder}</encoder>                                                     : null;
+            return $encoder ? <encoder>{$encoder}</encoder>                                                      : null;
         }
 
         /**
@@ -71,7 +71,7 @@ package eu.claudius.iacob.music.builders {
          */
         protected static function buildEncodingDate(encodingDate:String):XML {
             const $date:String = Strings.trim(encodingDate || '');
-            return $date ? <encoding-date>{$date}</encoding-date>                                                     : null;
+            return $date ? <encoding-date>{$date}</encoding-date>                                                      : null;
         }
 
         /**
@@ -84,7 +84,7 @@ package eu.claudius.iacob.music.builders {
             const $name:String = Strings.trim(miscName || '');
             const $value:String = Strings.trim(miscVal || '');
             return ($name && $value) ?
-                <miscellaneous-field name={$name}>{$value}</miscellaneous-field>                                                     : null;
+                <miscellaneous-field name={$name}>{$value}</miscellaneous-field>                                                      : null;
         }
 
         // --------------------------------
@@ -288,12 +288,14 @@ package eu.claudius.iacob.music.builders {
          * @return XML representing the \<page-layout\> element.
          */
         protected static function buildFullPageLayout(width:String, height:String,
-                margins:PageMargins):XML {
+                margins:Vector.<PageMargins>):XML {
             const pageLayout:XML = buildPageLayout(width, height);
 
-            pageLayout.appendChild(buildPageMargins(margins.left, margins.right,
-                        margins.top, margins.bottom, margins.type));
-
+            for each (var margin:PageMargins in margins){
+                pageLayout.appendChild(buildPageMargins(margin.left, margin.right,
+                        margin.top, margin.bottom, margin.type));
+            }
+            
             return pageLayout;
         }
 
@@ -311,7 +313,7 @@ package eu.claudius.iacob.music.builders {
          * @return XML representing the entire <defaults> section.
          */
         public static function buildPresentationDefaults(width:String, height:String,
-                margins:PageMargins, scaling:Scaling):XML {
+                margins:Vector.<PageMargins>, scaling:Scaling):XML {
             const defaults:XML = <defaults/>;
 
             // Add scaling
@@ -345,11 +347,11 @@ package eu.claudius.iacob.music.builders {
             const $id:String = Strings.trim(id || '');
             const $type:String = Strings.trim(type || '');
             if (!$id || !$type) {
-                trace ("Invalid part group: [" + $id + ", " + $type + "]");
+                trace("Invalid part group: [" + $id + ", " + $type + "]");
                 return null;
             }
             if ($type != "start" && $type != "stop") {
-                trace ("Invalid part group type: [" + $type + "]");
+                trace("Invalid part group type: [" + $type + "]");
                 return null;
             }
 
@@ -385,13 +387,13 @@ package eu.claudius.iacob.music.builders {
             const $name:String = Strings.trim(name || '');
             const $abbreviation:String = Strings.trim(abbreviation || '');
             if (!$id || !$name || !$abbreviation) {
-                trace ("Invalid score part: [" + $id + ", " + $name + ", " + $abbreviation + "]");
+                trace("Invalid score part: [" + $id + ", " + $name + ", " + $abbreviation + "]");
                 return null;
             }
             var scorePart:XML = <score-part id={$id}/>;
 
-            scorePart.appendChild(<part-name>$name</part-name>);
-            scorePart.appendChild(<part-abbreviation>$abbreviation</part-abbreviation>);
+            scorePart.appendChild(<part-name>{$name}</part-name>);
+            scorePart.appendChild(<part-abbreviation>{$abbreviation}</part-abbreviation>);
             scorePart.appendChild(<score-instrument id={$id + "-inst"}/>);
 
             const $midiChannel:String = Strings.trim(midiChannel || '');
@@ -540,22 +542,22 @@ package eu.claudius.iacob.music.builders {
             const $step:String = Strings.trim(step || '').toUpperCase();
             const $octave:String = Strings.trim(octave || '');
             if (!$step || !$octave || !Strings.isNumeric($octave)) {
-                trace ("Invalid pitch: [" + $step + ", " + $octave + "]");
+                trace("Invalid pitch: [" + $step + ", " + $octave + "]");
                 return null;
             }
             if (!["C", "D", "E", "F", "G", "A", "B"].includes($step)) {
-                trace ("Invalid pitch step: [" + $step + "]");
+                trace("Invalid pitch step: [" + $step + "]");
                 return null;
             }
             if (!['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'].includes($octave)) {
-                trace ("Invalid pitch octave: [" + $octave + "]");
+                trace("Invalid pitch octave: [" + $octave + "]");
                 return null;
             }
             pitch.appendChild(<step>{$step}</step>);
             pitch.appendChild(<octave>{$octave}</octave>);
 
             const $alter:String = Strings.trim(alteration || '');
-            if ($alter && Strings.isNumeric($alter)) {
+            if ($alter && $alter != "0" && Strings.isNumeric($alter)) {
                 pitch.appendChild(<alter>{$alter}</alter>);
             }
             return pitch;
@@ -569,7 +571,7 @@ package eu.claudius.iacob.music.builders {
         protected static function buildDuration(duration:String):XML {
             const $duration:String = Strings.trim(duration || '');
             if (!$duration || !Strings.isNumeric($duration)) {
-                trace ("Invalid duration: [" + $duration + "]");
+                trace("Invalid duration: [" + $duration + "]");
                 return null;
             }
 
@@ -584,15 +586,14 @@ package eu.claudius.iacob.music.builders {
         protected static function buildType(type:String):XML {
             const $type:String = Strings.trim(type || '');
             if (!$type) {
-                trace ("Invalid note type: [" + $type + "]");
+                trace("Invalid note type: [" + $type + "]");
                 return null;
             }
             const noteTypes:Array = [
-                    "1024th", "512th", "256th", "128th", "64th", "32nd", "16th",
-                    "eighth", "quarter", "half", "whole", "breve", "long", "maxima"
+                    "64th", "32nd", "16th", "eighth", "quarter", "half", "whole"
                 ];
             if (!noteTypes.includes($type)) {
-                trace ("Invalid note type: [" + $type + "]");
+                trace("Invalid note type: [" + $type + "]");
                 return null;
             }
 
@@ -607,12 +608,12 @@ package eu.claudius.iacob.music.builders {
         protected static function buildTie(tieType:String):XML {
             const $tieType:String = Strings.trim(tieType || '');
             if (!$tieType) {
-                trace ("Invalid tie type: [" + $tieType + "]");
+                trace("Invalid tie type: [" + $tieType + "]");
                 return null;
             }
             const tieTypes:Array = ["start", "stop", "continue", "let-ring"];
             if (!tieTypes.includes($tieType)) {
-                trace ("Invalid tie type: [" + $tieType + "]");
+                trace("Invalid tie type: [" + $tieType + "]");
                 return null;
             }
             return <tie type={tieType}/>;
@@ -626,7 +627,7 @@ package eu.claudius.iacob.music.builders {
         protected static function buildAccidental(accidental:String):XML {
             const $accidental:String = Strings.trim(accidental || '');
             if (!$accidental) {
-                trace ("Invalid accidental: [" + $accidental + "]");
+                trace("Invalid accidental: [" + $accidental + "]");
                 return null;
             }
             const accidentalTypes:Array = [
@@ -634,7 +635,7 @@ package eu.claudius.iacob.music.builders {
                     "double-flat", "natural-sharp", "natural-flat"
                 ];
             if (!accidentalTypes.includes($accidental)) {
-                trace ("Invalid accidental: [" + $accidental + "]");
+                trace("Invalid accidental: [" + $accidental + "]");
                 return null;
             }
 
@@ -649,7 +650,7 @@ package eu.claudius.iacob.music.builders {
         protected static function buildDivisions(divisions:String):XML {
             const $divisions:String = Strings.trim(divisions || '');
             if (!$divisions || !Strings.isNumeric($divisions)) {
-                trace ("Invalid divisions: [" + $divisions + "]");
+                trace("Invalid divisions: [" + $divisions + "]");
                 return null;
             }
 
@@ -664,7 +665,7 @@ package eu.claudius.iacob.music.builders {
         protected static function buildFifths(fifths:String):XML {
             const $fifths:String = Strings.trim(fifths || '');
             if (!$fifths || !Strings.isNumeric($fifths)) {
-                trace ("Invalid fifths: [" + $fifths + "]");
+                trace("Invalid fifths: [" + $fifths + "]");
                 return null;
             }
 
@@ -679,12 +680,12 @@ package eu.claudius.iacob.music.builders {
         protected static function buildMode(mode:String):XML {
             const $mode:String = Strings.trim(mode || '');
             if (!$mode) {
-                trace ("Invalid mode: [" + $mode + "]");
+                trace("Invalid mode: [" + $mode + "]");
                 return null;
             }
             const modes:Array = ["major", "minor"];
             if (!modes.includes($mode)) {
-                trace ("Invalid mode: [" + $mode + "]");
+                trace("Invalid mode: [" + $mode + "]");
                 return null;
             }
 
@@ -699,7 +700,7 @@ package eu.claudius.iacob.music.builders {
         protected static function buildBeats(beats:String):XML {
             const $beats:String = Strings.trim(beats || '');
             if (!$beats || !Strings.isNumeric($beats)) {
-                trace ("Invalid beats: [" + $beats + "]");
+                trace("Invalid beats: [" + $beats + "]");
                 return null;
             }
 
@@ -714,7 +715,7 @@ package eu.claudius.iacob.music.builders {
         protected static function buildBeatType(beatType:String):XML {
             const $beatType:String = Strings.trim(beatType || '');
             if (!$beatType || !Strings.isNumeric($beatType)) {
-                trace ("Invalid beat type: [" + $beatType + "]");
+                trace("Invalid beat type: [" + $beatType + "]");
                 return null;
             }
 
@@ -729,12 +730,12 @@ package eu.claudius.iacob.music.builders {
         protected static function buildSign(sign:String):XML {
             const $sign:String = Strings.trim(sign || '');
             if (!$sign) {
-                trace ("Invalid clef sign: [" + $sign + "]");
+                trace("Invalid clef sign: [" + $sign + "]");
                 return null;
             }
             const clefSigns:Array = ["G", "F", "C", "percussion", "none"];
             if (!clefSigns.includes($sign)) {
-                trace ("Invalid clef sign: [" + $sign + "]");
+                trace("Invalid clef sign: [" + $sign + "]");
                 return null;
             }
 
@@ -749,12 +750,12 @@ package eu.claudius.iacob.music.builders {
         protected static function buildLine(line:String):XML {
             const $line:String = Strings.trim(line || '');
             if (!$line || !Strings.isNumeric($line)) {
-                trace ("Invalid clef line: [" + $line + "]");
+                trace("Invalid clef line: [" + $line + "]");
                 return null;
             }
             const clefLines:Array = ["1", "2", "3", "4", "5"];
             if (!clefLines.includes($line)) {
-                trace ("Invalid clef line: [" + $line + "]");
+                trace("Invalid clef line: [" + $line + "]");
                 return null;
             }
 
@@ -777,7 +778,7 @@ package eu.claudius.iacob.music.builders {
         protected static function buildSound(tempo:String):XML {
             const $tempo:String = Strings.trim(tempo || '');
             if (!$tempo || !Strings.isNumeric($tempo)) {
-                trace ("Invalid tempo: [" + $tempo + "]");
+                trace("Invalid tempo: [" + $tempo + "]");
                 return null;
             }
             return <sound tempo={$tempo}/>;
@@ -791,12 +792,12 @@ package eu.claudius.iacob.music.builders {
         protected static function buildBeatUnit(beatUnit:String):XML {
             const $beatUnit:String = Strings.trim(beatUnit || '');
             if (!$beatUnit) {
-                trace ("Invalid beat unit: [" + $beatUnit + "]");
+                trace("Invalid beat unit: [" + $beatUnit + "]");
                 return null;
             }
             const beatUnits:Array = ["whole", "half", "quarter", "eighth", "16th", "32nd", "64th", "128th"];
             if (!beatUnits.includes($beatUnit)) {
-                trace ("Invalid beat unit: [" + $beatUnit + "]");
+                trace("Invalid beat unit: [" + $beatUnit + "]");
                 return null;
             }
 
@@ -811,7 +812,7 @@ package eu.claudius.iacob.music.builders {
         protected static function buildPerMinute(perMinute:String):XML {
             const $perMinute:String = Strings.trim(perMinute || '');
             if (!$perMinute || !Strings.isNumeric($perMinute)) {
-                trace ("Invalid per-minute: [" + $perMinute + "]");
+                trace("Invalid per-minute: [" + $perMinute + "]");
                 return null;
             }
             return <per-minute>{$perMinute}</per-minute>;
@@ -825,7 +826,7 @@ package eu.claudius.iacob.music.builders {
         protected static function buildWords(words:String):XML {
             const $words:String = Strings.trim(words || '');
             if (!$words) {
-                trace ("Invalid words: [" + $words + "]");
+                trace("Invalid words: [" + $words + "]");
                 return null;
             }
             return <words>{$words}</words>;
@@ -888,7 +889,7 @@ package eu.claudius.iacob.music.builders {
          */
         protected static function buildNote(noteData:Note):XML {
             if (!noteData) {
-                trace ("Invalid note data: [" + noteData + "]");
+                trace("Invalid note data: [" + noteData + "]");
                 return null;
             }
 
@@ -958,7 +959,7 @@ package eu.claudius.iacob.music.builders {
         protected static function buildDirectionType(payload:XML):XML {
             var directionType:XML = <direction-type/>;
             if (!payload) {
-                trace ("Invalid direction type payload: [" + payload + "]");
+                trace("Invalid direction type payload: [" + payload + "]");
                 return null;
             }
 
@@ -980,7 +981,7 @@ package eu.claudius.iacob.music.builders {
          */
         protected static function buildDirection(placement:String, words:Vector.<XML>, metronome:XML):XML {
             if (!metronome && !words) {
-                trace ("Invalid direction: [" + placement + ", " + words + ", " + metronome + "]");
+                trace("Invalid direction: [" + placement + ", " + words + ", " + metronome + "]");
                 return null;
             }
 
@@ -995,7 +996,7 @@ package eu.claudius.iacob.music.builders {
 
             if (metronome) {
                 direction.appendChild(buildDirectionType(metronome));
-                direction.appendChild(<sound tempo={metronome.perMinute}/>);
+                direction.appendChild(<sound tempo={metronome["per-minute"]}/>);
             }
             if (words && words.length > 0) {
                 for each (var wordsEl:XML in words) {
@@ -1020,7 +1021,7 @@ package eu.claudius.iacob.music.builders {
             ):XML {
 
             if (!number || !notes || notes.length == 0) {
-                trace ("Invalid measure: [" + number + ", " + notes + "]");
+                trace("Invalid measure: [" + number + ", " + notes + "]");
                 return null;
             }
 

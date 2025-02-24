@@ -4,6 +4,22 @@ package eu.claudius.iacob.music.wrappers {
      * Data wrapper for the \<identification\> MusicXML element.
      */
     public class Identification {
+
+        /**
+         * Data wrapper for the \<identification\> MusicXML element.
+         *
+         * @param   creators
+         *          Vector of `Creator` instances, see `Creator` for more information.
+         * 
+         * @param   encoder
+         *          Free text; the name of the software that encoded the music, e.g. "Finale 2014".
+         * 
+         * @param   encodingDate
+         *          The date when the music was encoded, in the format "YYYY-MM-DD".
+         * 
+         * @param   miscFields
+         *          Vector of `Misc` instances, see `Misc` for more information.
+         */
         public function Identification(
                 creators:Vector.<Creator>,
                 encoder:String,

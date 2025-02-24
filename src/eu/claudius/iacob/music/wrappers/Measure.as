@@ -4,6 +4,22 @@ package eu.claudius.iacob.music.wrappers {
      * Data wrapper for the \<measure\> MusicXML element.
      */
     public class Measure {
+
+        /**
+         * Data wrapper for the \<measure\> MusicXML element.
+         * 
+         * @param   number
+         *          The measure number, 1-based.
+         * 
+         * @param   notes
+         *          A vector of `Note` instances. See `Note` for more information.
+         * 
+         * @param   attributes
+         *          An `Attributes` instance. See `Attributes` for more information.
+         * 
+         * @param   direction
+         *          A `Direction` instance. See `Direction` for more information.
+         */
         public function Measure(
                 number:String, notes:Vector.<Note>,
                 attributes:Attributes = null, direction:Direction = null

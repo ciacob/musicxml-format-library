@@ -12,6 +12,31 @@ package eu.claudius.iacob.music.wrappers {
         private var _sign:String;
         private var _line:String;
 
+        /**
+         * Data wrapper for the \<attributes\> node of a MusicXML \<measure\>.
+         * @param   divisions
+         *          The divisions of the measure, i.e. the number of divisions a quarter note is divided into.
+         * 
+         * @param   fifths
+         *          The number of sharps or flats in the key signature, negative for flats, positive for sharps, 
+         *          e.g.: -1 for one flat (F major), 1 for one sharp (G major); 0 for C major.
+         * 
+         * @param   mode
+         *          The mode of the key signature. Supported values: "major" or "minor".
+         * 
+         * @param   beats
+         *          The number of beats in a measure, e.g. 3 for a 3/4 time signature.
+         * 
+         * @param   beatType
+         *          The type of beat in a measure, e.g. 4 for a 3/4 time signature.
+         * 
+         * @param   sign
+         *          The clef sign, e.g. "G" for treble clef. Supported values: "G", "F", "C", "percussion", "none".
+         * 
+         * @param   line
+         *          The clef line, e.g. 2 for the second line of the staff.
+         *
+         */
         public function Attributes(
                 divisions:String, fifths:String, mode:String, beats:String,
                 beatType:String, sign:String, line:String
