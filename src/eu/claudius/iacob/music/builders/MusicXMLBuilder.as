@@ -763,6 +763,21 @@ package eu.claudius.iacob.music.builders {
         }
 
         /**
+         * Builds the \<clef-octave-change\> element.
+         * @param change: String (The octave change for the clef, e.g., "-1", "0", "1")
+         * @return XML representing the \<clef-octave-change\> element. Can be empty for missing/invalid input.
+         */
+        protected static function buildClefOctaveChange (change:String):XML {
+            const $change:String = Strings.trim(change || '');
+            if (!$change || !Strings.isNumeric($change)) {
+                trace("Invalid clef octave change: [" + $change + "]");
+                return null;
+            }
+
+            return <clef-octave-change>{$change}</clef-octave-change>;
+        }
+
+        /**
          * Builds the \<dot\> element.
          * @return XML representing the \<dot\> element.
          */
@@ -870,13 +885,15 @@ package eu.claudius.iacob.music.builders {
          * Builds the \<clef\> element.
          * @param sign: String (The clef sign, e.g., "G", "F", "C", "percussion", "none")
          * @param line: String (The clef line number, e.g., "1", "2", "3", etc.)
+         * @param octaveChange: String (The octave change for the clef, e.g., "-1", "0", "1")
          * @return XML representing the \<clef\> element. Can be empty for missing/invalid input.
          */
-        protected static function buildClef(sign:String, line:String):XML {
+        protected static function buildClef(sign:String, line:String, octaveChange : String):XML {
             var clef:XML = <clef/>;
 
             clef.appendChild(buildSign(sign));
             clef.appendChild(buildLine(line));
+            clef.appendChild(buildClefOctaveChange(octaveChange));
 
             return clef;
         }
@@ -934,7 +951,7 @@ package eu.claudius.iacob.music.builders {
             attributes.appendChild(buildDivisions(aData.divisions));
             attributes.appendChild(buildKey(aData.fifths, aData.mode));
             attributes.appendChild(buildTime(aData.beats, aData.beatType));
-            attributes.appendChild(buildClef(aData.sign, aData.line));
+            attributes.appendChild(buildClef(aData.sign, aData.line, aData.octaveChange));
             return attributes;
         }
 

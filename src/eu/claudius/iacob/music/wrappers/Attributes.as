@@ -11,6 +11,7 @@ package eu.claudius.iacob.music.wrappers {
         private var _beatType:String;
         private var _sign:String;
         private var _line:String;
+        private var _octaveChange:String;
 
         /**
          * Data wrapper for the \<attributes\> node of a MusicXML \<measure\>.
@@ -34,12 +35,15 @@ package eu.claudius.iacob.music.wrappers {
          *          The clef sign, e.g. "G" for treble clef. Supported values: "G", "F", "C", "percussion", "none".
          * 
          * @param   line
-         *          The clef line, e.g. 2 for the second line of the staff.
+         *          The clef line, e.g. "2" for the second line of the staff.
+         * 
+         * @param   octaveChange
+         *          The number of octaves the clef is shifted, e.g. "-1" for an "8va bassa" clef.
          *
          */
         public function Attributes(
                 divisions:String, fifths:String, mode:String, beats:String,
-                beatType:String, sign:String, line:String
+                beatType:String, sign:String, line:String, octaveChange:String = null
             ) {
             _divisions = divisions;
             _fifths = fifths;
@@ -48,6 +52,7 @@ package eu.claudius.iacob.music.wrappers {
             _beatType = beatType;
             _sign = sign;
             _line = line;
+            _octaveChange = octaveChange;
         }
 
         public function get divisions():String {
@@ -76,6 +81,10 @@ package eu.claudius.iacob.music.wrappers {
 
         public function get line():String {
             return _line;
+        }
+
+        public function get octaveChange():String {
+            return _octaveChange;
         }
     }
 }
