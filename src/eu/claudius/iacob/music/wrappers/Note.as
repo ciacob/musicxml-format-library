@@ -14,37 +14,37 @@ package eu.claudius.iacob.music.wrappers {
          *          of 30 means a sixteenth note,  `<divisions>` in the `<attributes>` element.
          *          For example, if `<divisions>` is 120, a duration of 30 means a sixteenth note, and a duration
          *          of 60 means an eighth note.
-         * 
+         *
          * @param   type
-         *          The graphical type of the note when rendered. Supported values: 
+         *          The graphical type of the note when rendered. Supported values:
          *          "64th", "32nd", "16th", "eighth", "quarter", "half", "whole".
-         * 
+         *
          * @param   voice
          *          Optional, assumed "1" if missing. The voice of the note, 1-based.
-         * 
+         *
          * @param   pitch
-         *          Optional. A `Pitch` instance, see `Pitch` for more details. Only applicable if the note is 
+         *          Optional. A `Pitch` instance, see `Pitch` for more details. Only applicable if the note is
          *          not a rest.
-         * 
+         *
          * @param   numDots
          *          Optional, defaults to `0`. The number of dots the note will have. A dot increases the duration
          *          of the note by half of its original value. For example, a quarter note with one dot is
          *          equivalent to a quarter note tied to an eighth note. Supported values: `0`, `1`, `2`.
-         * 
+         *
          * @param   accidental
          *          Optional. The accidental of the note. Supported values: "sharp", "natural", "flat", "double-sharp",
-                    "double-flat", "natural-sharp", "natural-flat". Only applicable if the note is not a rest.
-
+         "double-flat", "natural-sharp", "natural-flat". Only applicable if the note is not a rest.
+         
          * @param   inChord
          *          Optional, default `false`. Whether to stack this note on top of the previous one to form a chord.
-         * 
+         *
          * @param   tie
          *          Optional. The type of tie to use in relation to this note. Supported values: "start", "stop",
          *          "continue", "let-ring". Only applicable if the note is not a rest.
-         * 
+         *
          *          Note: "continue" is used to signal that a note both stops a tie (from its left neighbor) and
          *          starts a new one (to its right neighbor).
-         * 
+         *
          *          Note: "let-ring" is used to produce a tie not anchored to an end note. It is used to indicate
          *          that a note should not be "closed", or "chocked", instead be left to sound for as long as its
          *          natural decay allows.
@@ -106,6 +106,24 @@ package eu.claudius.iacob.music.wrappers {
 
         public function get tie():String {
             return _tie;
+        }
+
+        public function toJSON(...ignore):Object {
+            return {
+                    type: 'Note',
+                    duration: duration,
+                    type: type,
+                    voice: voice,
+                    pitch: pitch,
+                    numDots: numDots,
+                    accidental: accidental,
+                    inChord: inChord,
+                    tie: tie
+                };
+        }
+
+        public function toString():String {
+            return JSON.stringify(toJSON());
         }
     }
 }

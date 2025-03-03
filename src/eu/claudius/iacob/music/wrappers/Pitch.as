@@ -36,5 +36,18 @@ package eu.claudius.iacob.music.wrappers
         public function get alteration():String {
             return _alteration;
         }
+
+        public function toJSON (...ignore) : Object {
+            return {
+                type: 'Pitch',
+                step:step,
+                octave:octave,
+                alteration:alteration
+            };
+        }
+
+        public function toString () : String {
+            return JSON.stringify (toJSON());
+        }
     }
 }
