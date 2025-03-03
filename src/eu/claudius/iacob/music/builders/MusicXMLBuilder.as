@@ -39,7 +39,7 @@ package eu.claudius.iacob.music.builders {
          */
         protected static function buildWorkTitle(title:String):XML {
             const $title:String = Strings.trim(title || '');
-            return $title ? <work-title>{$title}</work-title>                                                      : null;
+            return $title ? <work-title>{$title}</work-title>                                                       : null;
         }
 
         /**
@@ -51,7 +51,7 @@ package eu.claudius.iacob.music.builders {
         protected static function buildCreator(type:String, name:String):XML {
             const $type:String = Strings.trim(type || '');
             const $name:String = Strings.trim(name || '');
-            return ($type && $name) ? <creator type={$type}>{$name}</creator>                                                      : null;
+            return ($type && $name) ? <creator type={$type}>{$name}</creator>                                                       : null;
         }
 
         /**
@@ -61,7 +61,7 @@ package eu.claudius.iacob.music.builders {
          */
         protected static function buildEncoder(encoder:String):XML {
             const $encoder:String = Strings.trim(encoder || '');
-            return $encoder ? <encoder>{$encoder}</encoder>                                                      : null;
+            return $encoder ? <encoder>{$encoder}</encoder>                                                       : null;
         }
 
         /**
@@ -71,7 +71,7 @@ package eu.claudius.iacob.music.builders {
          */
         protected static function buildEncodingDate(encodingDate:String):XML {
             const $date:String = Strings.trim(encodingDate || '');
-            return $date ? <encoding-date>{$date}</encoding-date>                                                      : null;
+            return $date ? <encoding-date>{$date}</encoding-date>                                                       : null;
         }
 
         /**
@@ -84,7 +84,7 @@ package eu.claudius.iacob.music.builders {
             const $name:String = Strings.trim(miscName || '');
             const $value:String = Strings.trim(miscVal || '');
             return ($name && $value) ?
-                <miscellaneous-field name={$name}>{$value}</miscellaneous-field>                                                      : null;
+                <miscellaneous-field name={$name}>{$value}</miscellaneous-field>                                                       : null;
         }
 
         // --------------------------------
@@ -291,11 +291,11 @@ package eu.claudius.iacob.music.builders {
                 margins:Vector.<PageMargins>):XML {
             const pageLayout:XML = buildPageLayout(width, height);
 
-            for each (var margin:PageMargins in margins){
+            for each (var margin:PageMargins in margins) {
                 pageLayout.appendChild(buildPageMargins(margin.left, margin.right,
-                        margin.top, margin.bottom, margin.type));
+                            margin.top, margin.bottom, margin.type));
             }
-            
+
             return pageLayout;
         }
 
@@ -767,7 +767,7 @@ package eu.claudius.iacob.music.builders {
          * @param change: String (The octave change for the clef, e.g., "-1", "0", "1")
          * @return XML representing the \<clef-octave-change\> element. Can be empty for missing/invalid input.
          */
-        protected static function buildClefOctaveChange (change:String):XML {
+        protected static function buildClefOctaveChange(change:String):XML {
             const $change:String = Strings.trim(change || '');
             if (!$change || !Strings.isNumeric($change)) {
                 trace("Invalid clef octave change: [" + $change + "]");
@@ -888,7 +888,7 @@ package eu.claudius.iacob.music.builders {
          * @param octaveChange: String (The octave change for the clef, e.g., "-1", "0", "1")
          * @return XML representing the \<clef\> element. Can be empty for missing/invalid input.
          */
-        protected static function buildClef(sign:String, line:String, octaveChange : String):XML {
+        protected static function buildClef(sign:String, line:String, octaveChange:String):XML {
             var clef:XML = <clef/>;
 
             clef.appendChild(buildSign(sign));
@@ -938,6 +938,21 @@ package eu.claudius.iacob.music.builders {
             }
 
             return note;
+        }
+
+        /**
+         * Builds the `\<barline\>` element to denote a custom barline.
+         * Note: for the time being, we only support right-placed barlines of type "light-light"
+         * or "light-heavy"
+         * @param   barlineType: String (Supported values: "light-light" or "light-heavy")
+         * @return XML representing the `\<barline\>` element.  Can be empty for missing/invalid input.
+         */
+        protected static function buildBarline(barlineType:String):XML {
+            const $barlineType:String = Strings.trim(barlineType || '');
+            if ($barlineType && ["light-light", "light-heavy"].includes($barlineType)) {
+                return <barline location="right"><bar-style>{$barlineType}</bar-style></barline>;
+            }
+            return null;
         }
 
         /**
@@ -1030,11 +1045,13 @@ package eu.claudius.iacob.music.builders {
          * @param notes: Vector of Note objects (Each object represents a note)
          * @param attributes: Attributes object (Optional, the attributes for the measure)
          * @param direction: Direction object (Optional, the direction (additional indications, such as tempo, for the measure)
+         * @param barlineType: The type of custom barline to use (Optional, supported values: "light-light" and "light-heavy")
          * @return XML representing the \<measure\> element. Can be empty for missing/invalid input.
          */
         protected static function buildMeasure(
                 number:String, notes:Vector.<Note>,
-                attributes:Attributes = null, direction:Direction = null
+                attributes:Attributes = null, direction:Direction = null,
+                barlineType:String = null
             ):XML {
 
             if (!number || !notes || notes.length == 0) {
@@ -1069,6 +1086,8 @@ package eu.claudius.iacob.music.builders {
                 measure.appendChild(buildNote(noteData));
             }
 
+            measure.appendChild(buildBarline(barlineType));
+
             return measure;
         }
 
@@ -1090,7 +1109,8 @@ package eu.claudius.iacob.music.builders {
                 part.appendChild(buildMeasure(
                             (i + 1).toString(),
                             measureData.notes, measureData.attributes,
-                            measureData.direction
+                            measureData.direction,
+                            measureData.barlineType
                         ));
             }
 

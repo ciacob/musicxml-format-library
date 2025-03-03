@@ -15,25 +15,32 @@ package eu.claudius.iacob.music.wrappers {
          *          A vector of `Note` instances. See `Note` for more information.
          * 
          * @param   attributes
-         *          An `Attributes` instance. See `Attributes` for more information.
+         *          Optional. An `Attributes` instance. See `Attributes` for more information.
          * 
          * @param   direction
-         *          A `Direction` instance. See `Direction` for more information.
+         *          Optional. A `Direction` instance. See `Direction` for more information.
+         * 
+         * @param   barlineType
+         *          Optional. The right-hand custom barline to use. Supported values:
+         *          "light-light" (section barline) or "light-heavy" (final barline).
          */
         public function Measure(
                 number:String, notes:Vector.<Note>,
-                attributes:Attributes = null, direction:Direction = null
+                attributes:Attributes = null, direction:Direction = null,
+                barlineType: String = null
             ) {
             _number = number;
             _notes = notes;
             _attributes = attributes;
             _direction = direction;
+            _barlineType = barlineType;
         }
 
         private var _number:String;
         private var _notes:Vector.<Note>;
         private var _attributes:Attributes;
         private var _direction:Direction;
+        private var _barlineType:String;
 
         public function get number():String {
             return _number;
@@ -49,6 +56,10 @@ package eu.claudius.iacob.music.wrappers {
 
         public function get direction():Direction {
             return _direction;
+        }
+
+        public function get barlineType(): String {
+            return _barlineType;
         }
 
     }
