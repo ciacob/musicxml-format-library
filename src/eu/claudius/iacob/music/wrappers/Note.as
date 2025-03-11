@@ -110,7 +110,7 @@ package eu.claudius.iacob.music.wrappers {
 
         public function toJSON(...ignore):Object {
             return {
-                    type: 'Note',
+                    type: type,
                     duration: duration,
                     type: type,
                     voice: voice,

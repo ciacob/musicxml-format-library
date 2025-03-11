@@ -39,7 +39,7 @@ package eu.claudius.iacob.music.builders {
          */
         protected static function buildWorkTitle(title:String):XML {
             const $title:String = Strings.trim(title || '');
-            return $title ? <work-title>{$title}</work-title>                                                       : null;
+            return $title ? <work-title>{$title}</work-title>                                                         : null;
         }
 
         /**
@@ -51,7 +51,7 @@ package eu.claudius.iacob.music.builders {
         protected static function buildCreator(type:String, name:String):XML {
             const $type:String = Strings.trim(type || '');
             const $name:String = Strings.trim(name || '');
-            return ($type && $name) ? <creator type={$type}>{$name}</creator>                                                       : null;
+            return ($type && $name) ? <creator type={$type}>{$name}</creator>                                                         : null;
         }
 
         /**
@@ -61,7 +61,7 @@ package eu.claudius.iacob.music.builders {
          */
         protected static function buildEncoder(encoder:String):XML {
             const $encoder:String = Strings.trim(encoder || '');
-            return $encoder ? <encoder>{$encoder}</encoder>                                                       : null;
+            return $encoder ? <encoder>{$encoder}</encoder>                                                         : null;
         }
 
         /**
@@ -71,7 +71,7 @@ package eu.claudius.iacob.music.builders {
          */
         protected static function buildEncodingDate(encodingDate:String):XML {
             const $date:String = Strings.trim(encodingDate || '');
-            return $date ? <encoding-date>{$date}</encoding-date>                                                       : null;
+            return $date ? <encoding-date>{$date}</encoding-date>                                                         : null;
         }
 
         /**
@@ -84,7 +84,7 @@ package eu.claudius.iacob.music.builders {
             const $name:String = Strings.trim(miscName || '');
             const $value:String = Strings.trim(miscVal || '');
             return ($name && $value) ?
-                <miscellaneous-field name={$name}>{$value}</miscellaneous-field>                                                       : null;
+                <miscellaneous-field name={$name}>{$value}</miscellaneous-field>                                                         : null;
         }
 
         // --------------------------------
@@ -852,6 +852,24 @@ package eu.claudius.iacob.music.builders {
         // -----------------------------
 
         /**
+         * Builds the `\<backup\>` element.
+         *
+         * @param   duration
+         *          String representing the full duration of the additional voice to be
+         *          added, expressed in divisions of a quarter.
+         *
+         * @return  XML representing the `\<backup\>` element.
+         */
+        protected static function buildBackup(duration:String):XML {
+            const $duration:String = Strings.trim(duration || '');
+            if (!$duration) {
+                trace("Invalid backup duration: [" + duration + "]");
+                return null;
+            }
+            return <backup>{buildDuration(duration)}</backup>;
+        }
+
+        /**
          * Builds the \<key\> element.
          * @param fifths: String (Number of fifths in the key signature)
          * @param mode: String (The mode of the key signature, e.g., "major" or "minor")
@@ -1061,6 +1079,7 @@ package eu.claudius.iacob.music.builders {
 
             var measure:XML = <measure number={number}/>;
 
+            // Add `\<direction\>` (e.g., performance instructions and/or additional info).
             if (direction) {
                 var $words:Vector.<XML> = null;
                 if (direction.textLines) {
@@ -1078,15 +1097,51 @@ package eu.claudius.iacob.music.builders {
                 measure.appendChild(buildDirection(direction.placement, $words, $metronome));
             }
 
+            // Add `\<attributes\>` (e.g., clef, time signature).
             if (attributes) {
                 measure.appendChild(buildAttributes(attributes));
             }
 
-            for each (var noteData:Note in notes) {
-                measure.appendChild(buildNote(noteData));
+            // Add `<\note\>` children for the actual notes of the measure.
+            const noteGroups:Object = {length: 0};
+            var voiceGroup:Object;
+            var voiceNotes : Array;
+            var noteData:Note;
+
+            // Split notes in groups by their voice
+            for each (noteData in notes) {
+                const noteVoice:String = noteData.voice;
+                if (!(noteVoice in noteGroups)) {
+                    noteGroups[noteVoice] = {notes: [], duration: 0};
+                    noteGroups.length++;
+                }
+                voiceGroup = (noteGroups[noteVoice] as Object);
+                voiceNotes = (voiceGroup.notes as Array);
+                voiceNotes.push(noteData);
+                voiceGroup.duration += (parseInt(noteData.duration) || 0);
             }
 
-            measure.appendChild(buildBarline(barlineType));
+            // Walk the groups adding the notes, prefixing "voice two" by a `<backup\>` element.
+            for (var i : int = 1; i <= noteGroups.length; i++) {
+                voiceGroup = noteGroups[i.toString()] as Object;
+
+                // Ensure subsequent voice notes are preceded by a `\<backup\>` element.
+                if (i > 1) {
+                    measure.appendChild(buildBackup(voiceGroup.duration.toString()));     
+                }
+
+                // Append the notes.
+                voiceNotes = (voiceGroup.notes as Array);
+                for each (noteData in voiceNotes) {
+                    measure.appendChild(buildNote(noteData));
+                }
+            }
+
+            // Add `\<barline\>` if a custom barline is requested.
+            const $barline:XML = buildBarline(barlineType);
+            if ($barline) {
+                measure.appendChild($barline);
+            }
 
             return measure;
         }

@@ -39,7 +39,6 @@ package eu.claudius.iacob.music.wrappers
 
         public function toJSON (...ignore) : Object {
             return {
-                type: 'Pitch',
                 step:step,
                 octave:octave,
                 alteration:alteration

@@ -26,7 +26,8 @@ package eu.claudius.iacob.music.helpers {
          * Modern CPUs can handle this value efficiently, making it a safe default choice for
          * MusicXML processing.
          */
-        public static const SAFE_DIVISIONS_VALUE:Number = 110880;
+        public static const WHOLE_NUM_DIVISIONS:Number = 110880;
+        public static const QUARTER_NUM_DIVISIONS:Number = (WHOLE_NUM_DIVISIONS / 4);
 
         /**
          * Determines the closest downward power-of-2 fraction for a given tuplet fraction.
